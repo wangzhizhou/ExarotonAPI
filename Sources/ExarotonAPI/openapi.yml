@@ -1,0 +1,1333 @@
+openapi: 3.0.1
+info:
+  title: Exaroton API
+  description: HTTP API for exaroton
+  version: 1.0.0
+servers:
+  - url: https://api.exaroton.com/v1
+tags:
+  - name: Servers
+  - name: Server Logs
+  - name: Server Options
+  - name: Server Actions
+  - name: Server Players
+  - name: Account
+  - name: Credit Pools
+paths:
+  /account/:
+    get:
+      tags:
+        - Account
+      summary: Get account info
+      operationId: getAccount
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/GetAccountResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+  /servers/:
+    get:
+      tags:
+        - Servers
+      summary: Get all servers
+      operationId: getServers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/GetServersResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/:
+    get:
+      tags:
+        - Servers
+      summary: Get a server
+      operationId: getServer
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetServerResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/logs/:
+    get:
+      tags:
+        - Server Logs
+      summary: Get a server log
+      operationId: getServerLog
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetServerLogResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/logs/share/:
+    get:
+      tags:
+        - Server Logs
+      summary: Upload a server log to mclo.gs
+      operationId: shareServerLog
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetServerShareLogResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/options/ram/:
+    get:
+      tags:
+        - Server Options
+      summary: Get server ram
+      operationId: getServerRam
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetServerRamResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+    post:
+      tags:
+        - Server Options
+      summary: Change server ram
+      operationId: postServerRam
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ram:
+                  type: integer
+                  format: int32
+                  minimum: 2
+                  maximum: 16
+                  description: How many GB ram this server should have
+                  example: 5
+              required:
+                - ram
+      responses:
+        '200':
+          $ref: '#/components/responses/GetServerRamResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/options/motd/:
+    get:
+      tags:
+        - Server Options
+      summary: Get server MOTD
+      operationId: getServerMotd
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetServerMotdResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+    post:
+      tags:
+        - Server Options
+      summary: Change server MOTD
+      operationId: postServerMotd
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                motd:
+                  type: string
+                  description: The new MOTD for the server
+                  example: "§7Welcome to the server of §aexample!"
+              required:
+                - motd
+      responses:
+        '200':
+          $ref: '#/components/responses/GetServerMotdResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/start/:
+    get:
+      tags:
+        - Server Actions
+      summary: Start a server
+      operationId: getStartServer
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      responses:
+        '200':
+          $ref: '#/components/responses/ServerActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+    post:
+      tags:
+        - Server Actions
+      summary: Start a server with own credits
+      operationId: postStartServer
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                useOwnCredits:
+                  type: boolean
+      responses:
+        '200':
+          $ref: '#/components/responses/ServerActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/stop/:
+    get:
+      tags:
+        - Server Actions
+      summary: Stop a server
+      operationId: stopServer
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      responses:
+        '200':
+          $ref: '#/components/responses/ServerActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/restart/:
+    get:
+      tags:
+        - Server Actions
+      summary: Restart a server
+      operationId: restartServer
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      responses:
+        '200':
+          $ref: '#/components/responses/ServerActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/command/:
+    post:
+      tags:
+        - Server Actions
+      summary: Execute a server command
+      operationId: postServerCommand
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostServerCommandRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/ServerActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/playerlists/:
+    get:
+      tags:
+        - Server Players
+      summary: Get available player lists
+      description: >-
+        A player list is a list of players such as the whitelist, ops or bans.
+        Player list entries are usually usernames, but might be something else,
+        e.g. IPs in the banned-ips list. All player list operations are storage
+        operations that might take a while, so try to reduce the amount of
+        requests and combine actions when possible (e.g. adding/deleting
+        multiple entries at once). Player lists are also cached and might not
+        immediately return new results when changed through other methods.
+      operationId: getPlayerLists
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetPlayerListsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/playerlists/{list}/:
+    get:
+      tags:
+        - Server Players
+      summary: Get player list contents
+      operationId: getPlayerList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+        - $ref: '#/components/parameters/playerList'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetPlayerListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+    put:
+      tags:
+        - Server Players
+      summary: Add entries to player list
+      operationId: putPlayerList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+        - $ref: '#/components/parameters/playerList'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutPlayerListRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetPlayerListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+    delete:
+      tags:
+        - Server Players
+      summary: Remove entries from player list
+      operationId: deletePlayerList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+        - $ref: '#/components/parameters/playerList'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletePlayerListRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetPlayerListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/files/info/{path}/:
+    get:
+      tags:
+        - Server Files
+      summary: Get file info
+      operationId: getFileInfo
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+        - $ref: '#/components/parameters/filePath'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetFileInfoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/files/data/{path}/:
+    get:
+      tags:
+        - Server Files
+      summary: Get file content
+      operationId: getFileContent
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+        - $ref: '#/components/parameters/filePath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+    put:
+      tags:
+        - Server Files
+      summary: Write file content or create a directory
+      operationId: putFileData
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+        - $ref: '#/components/parameters/filePath'
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+          inode/directory:
+            schema:
+              type: string
+              format: binary
+              maxLength: 0
+              description: Content type inode/directory is used to create a new directory
+      responses:
+        '200':
+          $ref: '#/components/responses/EmptyResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+    delete:
+      tags:
+        - Server Files
+      summary: Delete a file or directory
+      operationId: deleteFile
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+        - $ref: '#/components/parameters/filePath'
+      responses:
+        '200':
+          $ref: '#/components/responses/EmptyResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/files/config/{path}/:
+    get:
+      tags:
+        - Server Files
+      summary: Get config file data
+      operationId: getConfigFileData
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: serverId
+          in: path
+          description: Unique server ID
+          required: true
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 16
+        - name: path
+          in: path
+          description: File path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/GetConfigFileResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+
+  /billing/pools/:
+    get:
+      tags:
+        - Credit Pools
+      summary: List all credit pools
+      operationId: getCreditPools
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          $ref: '#/components/responses/GetCreditPoolsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /billing/pools/{poolId}/:
+    get:
+      tags:
+        - Credit Pools
+      summary: Get a credit pool
+      operationId: getCreditPool
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/poolId'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetCreditPoolResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /billing/pools/{poolId}/servers/:
+    get:
+      tags:
+        - Credit Pools
+      summary: Get all servers in a credit pool
+      operationId: getCreditPoolServers
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/poolId'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetCreditPoolServersResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+  /billing/pools/{poolId}/members/:
+    get:
+      tags:
+        - Credit Pools
+      summary: Get all members in a credit pool
+      operationId: getCreditPoolMembers
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/poolId'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetCreditPoolMembersResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
+components:
+  parameters:
+    poolId:
+      name: poolId
+      in: path
+      description: Unique credit pool ID
+      required: true
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 16
+    serverId:
+      name: serverId
+      in: path
+      description: Unique server ID
+      required: true
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 16
+    filePath:
+      name: path
+      in: path
+      description: File path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    playerList:
+      name: list
+      in: path
+      description: Player list name
+      required: true
+      schema:
+        type: string
+  schemas:
+    PostServerCommandRequestBody:
+      type: object
+      properties:
+        command:
+          type: string
+          description: The command to send to the server
+          example: say Hello World
+    PlayerList:
+      type: array
+      items:
+        type: string
+        description: Players in this list
+      example:
+        - notch
+    PutPlayerListRequestBody:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            type: string
+            description: Players to add to this list
+          example:
+            - notch
+    DeletePlayerListRequestBody:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            type: string
+            description: Players to delete from the list
+          example:
+            - notch
+    Server:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 16
+          maxLength: 16
+          description: Unique server ID
+          example: EwYiY9IAMtQBTb6U
+        name:
+          type: string
+          description: Server name
+          example: example
+        address:
+          type: string
+          format: hostname
+          description: Full server address
+          example: example.exaroton.me
+        motd:
+          type: string
+          description: The MOTD of the server
+          example: "§7Welcome to the server of §aexample!"
+        status:
+          $ref: '#/components/schemas/ServerStatus'
+        host:
+          type: string
+          nullable: true
+          description: >-
+            Host machine the server is running on. Only available if the server
+            is online.
+        port:
+          type: integer
+          format: int32
+          description: >-
+            Port the server is listening on. Only available if the server is
+            online.
+        players:
+          type: object
+          properties:
+            max:
+              type: integer
+              format: int32
+              description: Maximum player count (slots)
+              example: 20
+            count:
+              type: integer
+              format: int32
+              description: Current player count
+              example: 0
+            list:
+              type: array
+              description: Current player list (not always available)
+              items:
+                type: string
+                description: The name of the player
+                example: Notch
+        software:
+          type: object
+          nullable: true
+          description: Information about the installed server software
+          properties:
+            id:
+              type: string
+              description: Unique software ID
+              example: kb4p09ABvLjxzedx
+            name:
+              type: string
+              description: Software name
+              example: Vanilla
+            version:
+              type: string
+              format: version
+              description: Software version
+              example: 1.16.5
+        shared:
+          type: boolean
+          description: Whether the server is accessed via the Share Access feature
+          example: false
+    ServerStatus:
+      description: >
+        Servers can have different numeric status codes. Depending on a server's
+        status, only certain features might be available.
+
+        Possible enum values:
+         * 0 = OFFLINE
+         * 1 = ONLINE
+         * 2 = STARTING
+         * 3 = STOPPING
+         * 4 = RESTARTING
+         * 5 = SAVING
+         * 6 = LOADING
+         * 7 = CRASHED
+         * 8 = PENDING
+         * 10 = PREPARING
+      type: integer
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 10
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          nullable: true
+          example: Invalid API token
+        data:
+          type: object
+          properties: {}
+          nullable: true
+          example: null
+    FileInfo:
+      type: object
+      properties:
+        path:
+          type: string
+          example: world/playerdata
+        name:
+          type: string
+          example: playerdata
+        isTextFile:
+          type: boolean
+          example: false
+        isConfigFile:
+          type: boolean
+          example: false
+        isDirectory:
+          type: boolean
+          example: true
+        isLog:
+          type: boolean
+          example: false
+        isReadable:
+          type: boolean
+          example: false
+        isWritable:
+          type: boolean
+          example: false
+        size:
+          type: integer
+          example: 4096
+        children:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/FileInfo'
+    ConfigFileOption:
+      type: object
+      properties:
+        key:
+          type: string
+          example: max-players
+        label:
+          type: string
+          example: Max Players
+        type:
+          type: string
+          example: integer
+        value:
+          oneOf:
+            - type: string
+            - type: integer
+            - type: boolean
+          example: 20
+        options:
+          type: array
+          nullable: true
+          items:
+            type: string
+            example:
+              - survival
+              - creative
+              - adventure
+              - spectator
+    CreditPool:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 16
+          maxLength: 16
+          description: Unique credit pool ID
+          example: X4iJREgqBGFSBtn0
+        name:
+          type: string
+          description: Credit pool name
+          example: example
+        credits:
+          type: number
+          format: double
+          description: Credits in this credit pool
+          example: 100.05
+        servers:
+          type: integer
+          description: Number of servers in this credit pool
+          example: 1
+        owner:
+          type: string
+          minLength: 16
+          maxLength: 16
+          description: Unique account ID of the pool owner
+          example: EwYiY9IAMtQBTb6s
+        isOwner:
+          type: boolean
+          description: Whether the current user is the owner of this credit pool
+          example: false
+        members:
+          type: integer
+          description: Number of members in this credit pool
+          example: 2
+        ownShare:
+          type: number
+          format: double
+          description: Share of the credits in this pool that are owned by the current user
+          example: 0.5
+        ownCredits:
+          type: number
+          format: double
+          description: Number of credits in the pool that are owned by the current user
+          example: 21
+    CreditPoolMember:
+      type: object
+      properties:
+        account:
+          type: string
+          minLength: 16
+          maxLength: 16
+          description: Unique account ID of the pool member
+          example: EwYiY9IAMtQBTb6s
+        name:
+          type: string
+          description: Account name of the pool member
+          example: example
+        share:
+          type: number
+          format: double
+          description: Share of the credits in this pool that are owned by the account
+          example: 0.5
+        credits:
+          type: number
+          format: double
+          description: Number of credits in the pool that are owned by the account
+          example: 21
+        isOwner:
+          type: boolean
+          description: Whether the account is the owner of this credit pool
+          example: false
+  responses:
+    GetAccountResponse:
+      description: Response for the request `getAccount`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                type: object
+                nullable: true
+                properties:
+                  name:
+                    type: string
+                    example: example
+                  email:
+                    type: string
+                    format: email
+                    example: example@exaroton.com
+                  verified:
+                    type: boolean
+                    example: true
+                  credits:
+                    type: number
+                    format: double
+                    example: 42.05
+    GetServersResponse:
+      description: Response for the request `getServers`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Server'
+    GetServerResponse:
+      description: Response for the request `getServer`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                nullable: true
+                type: array
+                items:
+                  $ref: '#/components/schemas/Server'
+                description: The response data
+    GetServerLogResponse:
+      description: Response for the request `getServerLog`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                nullable: true
+                type: object
+                properties:
+                  content:
+                    type: string
+                    nullable: true
+                    example: >-
+                      [16:14:36] [main/INFO]: Environment:
+                      authHost='https://authserver.mojang.com',...
+    GetServerShareLogResponse:
+      description: Response for the request `shareServerLog`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                nullable: true
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID on mclo.gs
+                    example: zCcf8T5
+                  url:
+                    type: string
+                    format: uri
+                    description: URL to shared logs on mclo.gs
+                    example: https://mclo.gs/zCcf8T5
+                  raw:
+                    type: string
+                    format: uri
+                    description: URL to api of mclo.gs
+                    example: https://api.mclo.gs/1/raw/zCcf8T5
+    GetServerRamResponse:
+      description: Response for the request `getServerRam`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                nullable: true
+                type: object
+                properties:
+                  ram:
+                    type: integer
+                    format: int32
+                    description: How many GB ram this server has
+                    example: 5
+    GetServerMotdResponse:
+      description: Response for the request `getServerMotd`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                nullable: true
+                type: object
+                properties:
+                  motd:
+                    type: string
+                    description: The MOTD of the server
+                    example: "§7Welcome to the server of §aexample!"
+    ServerActionResponse:
+      description: Response for the request `getServerMotd`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                nullable: true
+                type: object
+                properties: { }
+    EmptyResponse:
+      description: An empty response without any data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                nullable: true
+                type: object
+                properties: { }
+    GetPlayerListsResponse:
+      description: Response for the request `getPlayerLists`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                type: array
+                items:
+                  type: string
+                  description: Available player lists
+                example:
+                  - whitelist
+    GetPlayerListResponse:
+      description: Player list response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                $ref: '#/components/schemas/PlayerList'
+    GetFileInfoResponse:
+      description: Response for the request `getFileInfo`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FileInfo'
+    GetConfigFileResponse:
+      description: Response for the request `getConfigFileData`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                type: array
+                nullable: true
+                items:
+                  $ref: '#/components/schemas/ConfigFileOption'
+    GetCreditPoolsResponse:
+      description: Response for the request `getCreditPools`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditPool'
+    GetCreditPoolResponse:
+      description: Response for the request `getCreditPool`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                $ref: '#/components/schemas/CreditPool'
+    GetCreditPoolServersResponse:
+      description: Response for the request `getCreditPoolServers`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Server'
+    GetCreditPoolMembersResponse:
+      description: Response for the request `getCreditPoolMembers`
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditPoolMember'
+    ForbiddenResponse:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequestResponse:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFoundResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalErrorResponse:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Token

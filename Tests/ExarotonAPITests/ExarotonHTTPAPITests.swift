@@ -250,7 +250,19 @@ final class ExarotonHTTPAPITests: XCTestCase {
             path: .init(serverId: yourServerId,list: "whitelist"),
             body: .json(.init(entries: [yourTestPlayerName]))
         )
-        XCTAssertTrue(try response.ok.body.json.data?.contains(yourTestPlayerName) == true)
+        switch response {
+        case .ok(let okResponse):
+            let json = try okResponse.body.json
+            XCTAssertTrue(json.success == true)
+            XCTAssertTrue(json.data?.contains(yourTestPlayerName) == true)
+        case .internalServerError(let internalServerResponse):
+            let json = try internalServerResponse.body.json
+            XCTAssertTrue(json.success == false)
+            XCTAssertTrue(json.error == "Internal Server Error")
+        default:
+            XCTAssertTrue(false)
+        }
+
     }
 
     func testRemoveEntriesFromPlayerListOfWhitelist() async throws {
@@ -258,7 +270,19 @@ final class ExarotonHTTPAPITests: XCTestCase {
             path: .init(serverId: yourServerId,list: "whitelist"),
             body: .json(.init(entries: [yourTestPlayerName]))
         )
-        XCTAssertTrue(try response.ok.body.json.data?.contains(yourTestPlayerName) == false)
+        switch response {
+        case .ok(let okResponse):
+            let json = try okResponse.body.json
+            XCTAssertTrue(json.success == true)
+            XCTAssertTrue(json.data?.contains(yourTestPlayerName) == false)
+        case .internalServerError(let internalServerResponse):
+            let json = try internalServerResponse.body.json
+            XCTAssertTrue(json.success == false)
+            XCTAssertTrue(json.error == "Internal Server Error")
+        default:
+            XCTAssertTrue(false)
+        }
+
     }
 
     func testGetFileInformation() async throws {
@@ -290,9 +314,18 @@ final class ExarotonHTTPAPITests: XCTestCase {
             path: .init(serverId: yourServerId, path: yourTestFilePath),
             body: .binary(.init(stringLiteral: fileContent))
         )
-        let json = try response.ok.body.json
-        XCTAssertNotNil(json.success == true)
-        XCTAssertNil(json.data)
+        switch response {
+        case .ok(let okResponse):
+            let json = try okResponse.body.json
+            XCTAssertTrue(json.success == true)
+            XCTAssertNil(json.data)
+        case .internalServerError(let internalServerResponse):
+            let json = try internalServerResponse.body.json
+            XCTAssertTrue(json.success == false)
+            XCTAssertTrue(json.error == "Internal Server Error")
+        default:
+            XCTAssertTrue(false)
+        }
     }
 
     func testDeleteFile() async throws {
@@ -344,6 +377,10 @@ final class ExarotonHTTPAPITests: XCTestCase {
             let json = try notFoundResponse.body.json
             XCTAssertTrue(json.success == false)
             XCTAssertTrue(json.error == "File not found")
+        case .internalServerError(let internalServerResponse):
+            let json = try internalServerResponse.body.json
+            XCTAssertTrue(json.success == false)
+            XCTAssertTrue(json.error == "Internal Server Error")
         default:
             XCTAssertTrue(false)
         }

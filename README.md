@@ -72,7 +72,6 @@ If things goes well, you will see the unittests run and success or fail as follo
 
 ![unit tests](./images/unittests.png)
 
----
 
 [Exaroton]: <https://exaroton.com>
 

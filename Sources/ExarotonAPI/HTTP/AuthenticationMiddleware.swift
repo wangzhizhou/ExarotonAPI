@@ -19,19 +19,19 @@ import OpenAPIURLSession
 import HTTPTypes
 
 /// A client middleware that injects a value into the `Authorization` header field of the request.
-struct AuthenticationMiddleware {
+public struct AuthenticationMiddleware {
 
     /// The value for the `Authorization` header field.
-    let token: String
+    public let token: String
 
     /// Creates a new middleware.
     /// - Parameter value: The value for the `Authorization` header field.
-    init(token: String) { self.token = token }
+    public init(token: String) { self.token = token }
 }
 
 extension AuthenticationMiddleware: ClientMiddleware {
 
-    func intercept(
+    public func intercept(
         _ request: HTTPRequest,
         body: HTTPBody?,
         baseURL: URL,

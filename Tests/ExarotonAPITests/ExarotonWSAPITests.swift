@@ -7,7 +7,7 @@
 
 import Foundation
 import XCTest
-@testable import ExarotonAPI
+import ExarotonAPI
 
 final class ExarotonWSAPITests: XCTestCase {
 
@@ -30,201 +30,93 @@ final class ExarotonWSAPITests: XCTestCase {
     }
 
     func testStartConsoleStream() async throws {
-        let message = WebSocketAPIMessage(
+        let message = ExarotonMessage(
             stream: .console,
             type: StreamType.start,
-            data: ["tail": 10]
+            data: ["tail": 5]
         )
-        let data = try data(for: message)
+        let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
 
     func testStopConsoleStream() async throws {
-        let message = WebSocketAPIMessage(
+        let message = ExarotonMessage(
             stream: .console,
             type: StreamType.stop,
             data: nil
         )
-        let data = try data(for: message)
+        let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
 
     func testSendConsoleCommandStream() async throws {
-        let message = WebSocketAPIMessage(
+        let message = ExarotonMessage(
             stream: .console,
             type: StreamType.command,
-            data: "say Hello, ExarotonWSAPITests"
+            data: "say Hello"
         )
-        let data = try data(for: message)
+        let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
 
     }
 
     func testStartTickStream() async throws {
-        let message = WebSocketAPIMessage(
+        let message = ExarotonMessage(
             stream: .tick,
             type: StreamType.start,
             data: nil
         )
-        let data = try data(for: message)
+        let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
 
     func testStopTickStream() async throws {
-        let message = WebSocketAPIMessage(
+        let message = ExarotonMessage(
             stream: .tick,
             type: StreamType.stop,
             data: nil
         )
-        let data = try data(for: message)
+        let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
 
     func testStartStatsStream() async throws {
-        let message = WebSocketAPIMessage(
+        let message = ExarotonMessage(
             stream: .stats,
             type: StreamType.start,
             data: nil
         )
-        let data = try data(for: message)
+        let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
 
     func testStopStatsStream() async throws {
-        let message = WebSocketAPIMessage(
+        let message = ExarotonMessage(
             stream: .stats,
             type: StreamType.stop,
             data: nil
         )
-        let data = try data(for: message)
+        let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
 
     func testStartHeapStream() async throws {
-        let message = WebSocketAPIMessage(
+        let message = ExarotonMessage(
             stream: .heap,
             type: StreamType.start,
             data: nil
         )
-        let data = try data(for: message)
+        let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
 
     func testStopHeapStream() async throws {
-        let message = WebSocketAPIMessage(
+        let message = ExarotonMessage(
             stream: .heap,
             type: StreamType.stop,
             data: nil
         )
-        let data = try data(for: message)
+        let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
-    }
-}
-
-extension ExarotonWSAPITests {
-
-    func wait(minutes: Int) async throws {
-        try await wait(seconds: minutes * 60)
-    }
-
-    func wait(seconds: Int) async throws {
-        let delayExpectation = XCTestExpectation()
-        delayExpectation.isInverted = true
-        await fulfillment(of: [delayExpectation], timeout: Double(seconds))
-    }
-
-    func data<T: Codable>(for message: WebSocketAPIMessage<T>) throws -> Data {
-        return try JSONEncoder().encode(message)
-    }
-}
-
-import Starscream
-final class WebSocketEventDelegateHandler: WebSocketDelegate {
-
-    var isConnected: Bool = false
-
-    let jsonDecoder = JSONDecoder()
-
-    func didReceive(event: WebSocketEvent, client: any WebSocketClient) {
-
-        do {
-            switch event {
-            case .connected(let headers):
-                isConnected = true
-                print("websocket is connected: \(headers)")
-            case .disconnected(let reason, let code):
-                isConnected = false
-                print("websocket is disconnected: \(reason) with code: \(code)")
-            case .text(let text):
-                print("Received text: \(text)")
-                try handleTextMessage(text)
-            case .binary(let data):
-                print("Received data: \(data.count)")
-            case .ping(_):
-                break
-            case .pong(_):
-                break
-            case .viabilityChanged(_):
-                break
-            case .reconnectSuggested(_):
-                break
-            case .cancelled:
-                isConnected = false
-            case .error(let error):
-                isConnected = false
-                handleError(error)
-            case .peerClosed:
-                break
-            }
-        } catch let error {
-            handleError(error)
-        }
-    }
-
-    func handleError(_ error: Error?) {
-
-        guard let error else { return }
-
-        print(error.localizedDescription)
-    }
-
-    func handleTextMessage(_ text: String) throws {
-        guard let message = try text.wsMessage(with: String.self)
-        else {
-            return
-        }
-        if message.stream == nil, let basicMessage = try text.wsMessage(with: BasicType.self) {
-            switch basicMessage.type {
-            case .ready:
-                if let serverID = message.data {
-                    print("serverID: \(serverID)")
-                }
-            case .connected:
-                print("connected")
-            case .disconnected:
-                let reason = message.data
-                print("disconnected: \(reason ?? "")")
-            case .keepAlive:
-                print(message.data ?? "")
-            }
-        } else if let streamMessage = try text.wsMessage(with: StreamType.self)  {
-            switch streamMessage.type {
-
-            case .status:
-                print(streamMessage.data)
-            case .start, .stop, .command:
-                break
-            case .started:
-                print(streamMessage)
-            case .line:
-                print(streamMessage.data)
-            case .tick:
-                print(streamMessage.data)
-            case .stats:
-                print(streamMessage.data)
-            case .heap:
-                print(streamMessage.data)
-            }
-        }
     }
 }

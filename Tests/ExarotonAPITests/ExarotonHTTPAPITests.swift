@@ -1,6 +1,6 @@
 import XCTest
 
-@testable import ExarotonAPI
+import ExarotonAPI
 import OpenAPIRuntime
 import OpenAPIURLSession
 
@@ -82,7 +82,7 @@ final class ExarotonHTTPAPITests: XCTestCase {
                 json.error == "Log file is empty or does not exist"
             )
         default:
-            XCTAssertTrue(false)
+            XCTAssertTrue(false, "\(response)")
         }
     }
 
@@ -109,7 +109,7 @@ final class ExarotonHTTPAPITests: XCTestCase {
             XCTAssertTrue(json.success == false)
             XCTAssertTrue(json.error == "只有在服务器处于关闭状态时才能上传世界。")
         default:
-            XCTAssertTrue(false)
+            XCTAssertTrue(false, "\(response)")
         }
     }
 
@@ -147,8 +147,10 @@ final class ExarotonHTTPAPITests: XCTestCase {
             let json = try internalServerResponse.body.json
             XCTAssertTrue(json.success == false)
             XCTAssertTrue(json.error == "Server is already starting")
+        case .undocumented(let statusCode, let payload):
+            XCTAssertTrue(false, "statusCode: \(statusCode), payload: \(payload)")
         default:
-            XCTAssertTrue(false)
+            XCTAssertTrue(false, "\(response)")
         }
     }
 
@@ -168,8 +170,10 @@ final class ExarotonHTTPAPITests: XCTestCase {
             XCTAssertNotNil(json)
             XCTAssertFalse(json.success ?? false)
             XCTAssertTrue(json.error == "Server is not offline")
+        case .undocumented(let statusCode, let payload):
+            XCTAssertTrue(false, "statusCode: \(statusCode), payload: \(payload)")
         default:
-            XCTAssertTrue(false)
+            XCTAssertTrue(false, "\(response)")
         }
     }
 
@@ -187,7 +191,7 @@ final class ExarotonHTTPAPITests: XCTestCase {
             XCTAssertFalse(json.success ?? false)
             XCTAssertTrue(json.error == "Server is not online")
         default:
-            XCTAssertTrue(false)
+            XCTAssertTrue(false, "\(response)")
         }
     }
 
@@ -205,7 +209,7 @@ final class ExarotonHTTPAPITests: XCTestCase {
             XCTAssertFalse(json.success ?? false)
             XCTAssertTrue(json.error == "Server is not online")
         default:
-            XCTAssertTrue(false)
+            XCTAssertTrue(false, "\(response)")
         }
     }
 
@@ -227,7 +231,7 @@ final class ExarotonHTTPAPITests: XCTestCase {
             XCTAssertFalse(json.success ?? false)
             XCTAssertTrue(json.error == "Server is not online")
         default:
-            XCTAssertTrue(false)
+            XCTAssertTrue(false, "\(response)")
         }
     }
 
@@ -260,7 +264,7 @@ final class ExarotonHTTPAPITests: XCTestCase {
             XCTAssertTrue(json.success == false)
             XCTAssertTrue(json.error == "Internal Server Error")
         default:
-            XCTAssertTrue(false)
+            XCTAssertTrue(false, "\(response)")
         }
 
     }
@@ -280,7 +284,7 @@ final class ExarotonHTTPAPITests: XCTestCase {
             XCTAssertTrue(json.success == false)
             XCTAssertTrue(json.error == "Internal Server Error")
         default:
-            XCTAssertTrue(false)
+            XCTAssertTrue(false, "\(response)")
         }
 
     }
@@ -299,7 +303,8 @@ final class ExarotonHTTPAPITests: XCTestCase {
         for filePath in [jsonFilePath, zipFilePath, ymlFilePath] {
             do {
                 let response = try await client.getFileContent(
-                    path: .init(serverId: yourServerId, path: filePath)
+                    path: .init(serverId: yourServerId, path: filePath),
+                    headers: .init(accept: [.init(contentType: .binary)])
                 )
                 XCTAssertNotNil(try response.ok.body.binary)
             } catch let error as OpenAPIRuntime.ClientError {
@@ -324,7 +329,7 @@ final class ExarotonHTTPAPITests: XCTestCase {
             XCTAssertTrue(json.success == false)
             XCTAssertTrue(json.error == "Internal Server Error")
         default:
-            XCTAssertTrue(false)
+            XCTAssertTrue(false, "\(response)")
         }
     }
 
@@ -342,7 +347,7 @@ final class ExarotonHTTPAPITests: XCTestCase {
             XCTAssertTrue(json.success == false)
             XCTAssertTrue(json.error == "Access denied")
         default:
-            XCTAssertTrue(false)
+            XCTAssertTrue(false, "\(response)")
         }
     }
 
@@ -360,7 +365,7 @@ final class ExarotonHTTPAPITests: XCTestCase {
         let kv = [key: value]
         let response = try await client.postConfigFileData(
             path: .init(serverId: yourServerId, path: configFilePath),
-            body: .json(.init(additionalProperties: kv))
+            body: .json(.init(additionalProperties: .init(unvalidatedValue: kv)))
         )
         switch response {
         case .ok(let okResponse):
@@ -371,7 +376,7 @@ final class ExarotonHTTPAPITests: XCTestCase {
             case .case1(let stringValue):
                 XCTAssertTrue(stringValue == value)
             default:
-                XCTAssertTrue(false)
+                XCTAssertTrue(false, "\(response)")
             }
         case .notFound(let notFoundResponse):
             let json = try notFoundResponse.body.json
@@ -382,7 +387,7 @@ final class ExarotonHTTPAPITests: XCTestCase {
             XCTAssertTrue(json.success == false)
             XCTAssertTrue(json.error == "Internal Server Error")
         default:
-            XCTAssertTrue(false)
+            XCTAssertTrue(false, "\(response)")
         }
     }
 

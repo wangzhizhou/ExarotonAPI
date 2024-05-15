@@ -25,6 +25,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-http-types", from: "1.0.2"),
         .package(url: "https://github.com/daltoniam/Starscream.git", from: "4.0.8"),
         .package(url: "https://github.com/flight-school/anycodable.git", from: "0.6.7"),
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.5.4"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -37,6 +38,7 @@ let package = Package(
                 .product(name: "HTTPTypes", package: "swift-http-types"),
                 .product(name: "Starscream", package: "starscream"),
                 .product(name: "AnyCodable", package: "AnyCodable"),
+                .product(name: "Logging", package: "swift-log"),
             ], plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
             ]),

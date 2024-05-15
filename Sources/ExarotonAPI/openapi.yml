@@ -581,10 +581,10 @@ paths:
     post:
       tags:
         - Server Files
-      summary: Update config options
+      summary: Update config file
       operationId: postConfigFileData
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - name: serverId
           in: path
@@ -605,7 +605,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostServerFileConfigBody'
+              $ref: '#/components/schemas/PostConfigFileBody'
       responses:
         '200':
           $ref: '#/components/responses/GetConfigFileResponse'
@@ -617,6 +617,7 @@ paths:
           $ref: '#/components/responses/NotFoundResponse'
         '500':
           $ref: '#/components/responses/InternalErrorResponse'
+
   /billing/pools/:
     get:
       tags:
@@ -765,10 +766,10 @@ components:
             description: Players to delete from the list
           example:
             - notch
-    PostServerFileConfigBody:
+    PostConfigFileBody:
       type: object
-      additionalProperties:
-        type: string
+      additionalProperties: true
+
     Server:
       type: object
       properties:
@@ -1086,11 +1087,7 @@ components:
                 type: string
                 nullable: true
               data:
-                nullable: true
-                type: object
-                items:
-                  $ref: '#/components/schemas/Server'
-                description: The response data
+                $ref: '#/components/schemas/Server'
     GetServerLogResponse:
       description: Response for the request `getServerLog`
       content:
@@ -1262,9 +1259,7 @@ components:
                 type: string
                 nullable: true
               data:
-                type: object
-                items:
-                  $ref: '#/components/schemas/FileInfo'
+                $ref: '#/components/schemas/FileInfo'
     GetConfigFileResponse:
       description: Response for the request `getConfigFileData`
       content:
@@ -1373,3 +1368,4 @@ components:
       type: http
       scheme: bearer
       bearerFormat: Token
+

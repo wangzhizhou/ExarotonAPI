@@ -1,5 +1,5 @@
 {
-  "originHash" : "3c28e6f8eb480d84d7c44a4e8457ee7e50126ba46074965ce7d89b78d57a9c4f",
+  "originHash" : "a16134d0021c524054a8c77b4a82d421dcc50966eb33e4c471f5a4af5cc1d425",
   "pins" : [
     {
       "identity" : "openapikit",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "33a9984b4af03f00e68b8ee85f1273cb826af04f",
         "version" : "3.1.3"
+      }
+    },
+    {
+      "identity" : "starscream",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/daltoniam/Starscream.git",
+      "state" : {
+        "revision" : "c6bfd1af48efcc9a9ad203665db12375ba6b145a",
+        "version" : "4.0.8"
       }
     },
     {

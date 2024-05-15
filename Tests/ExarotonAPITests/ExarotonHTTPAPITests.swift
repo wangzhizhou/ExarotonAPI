@@ -4,7 +4,7 @@ import XCTest
 import OpenAPIRuntime
 import OpenAPIURLSession
 
-final class ExarotonAPITests: XCTestCase {
+final class ExarotonHTTPAPITests: XCTestCase {
 
     var yourServerToken: String = ""
 

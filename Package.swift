@@ -23,6 +23,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-openapi-runtime.git", from: "1.4.0"),
         .package(url: "https://github.com/apple/swift-openapi-urlsession.git", from: "1.0.1"),
         .package(url: "https://github.com/apple/swift-http-types", from: "1.0.2"),
+        .package(url: "https://github.com/daltoniam/Starscream.git", from: "4.0.8"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -33,6 +34,7 @@ let package = Package(
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),
                 .product(name: "HTTPTypes", package: "swift-http-types"),
+                .product(name: "Starscream", package: "starscream"),
             ], plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
             ]),

@@ -578,7 +578,45 @@ paths:
           $ref: '#/components/responses/NotFoundResponse'
         '500':
           $ref: '#/components/responses/InternalErrorResponse'
-
+    post:
+      tags:
+        - Server Files
+      summary: Update config options
+      operationId: postConfigFileData
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: serverId
+          in: path
+          description: Unique server ID
+          required: true
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 16
+        - name: path
+          in: path
+          description: File path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostServerFileConfigBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetConfigFileResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
   /billing/pools/:
     get:
       tags:
@@ -727,6 +765,10 @@ components:
             description: Players to delete from the list
           example:
             - notch
+    PostServerFileConfigBody:
+      type: object
+      additionalProperties:
+        type: string
     Server:
       type: object
       properties:

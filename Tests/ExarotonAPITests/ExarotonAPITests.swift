@@ -321,17 +321,32 @@ final class ExarotonAPITests: XCTestCase {
     }
 
     func testUpdateConfigOptions() async throws {
-        let configFilePath = "/server.properties"
+        let configFilePath = "server.properties"
         let key = "gamemode"
         let value = "survival"
         let kv = [key: value]
-        XCTAssertTrue(false)
-        //        let response = try await client.
-        //        let gameModeOption = data.filter { $0.key == key }.first
-        //        XCTAssertNotNil(gameModeOption)
-        //        if let gameMode = gameModeOption?.value.value as? String {
-        //            XCTAssertTrue(gameMode == value)
-        //        }
+        let response = try await client.postConfigFileData(
+            path: .init(serverId: yourServerId, path: configFilePath),
+            body: .json(.init(additionalProperties: kv))
+        )
+        switch response {
+        case .ok(let okResponse):
+            let data = try okResponse.body.json.data
+            XCTAssertNotNil(data)
+            let gameModeOptionValue = data?.filter { $0.key == key }.first?.value
+            switch gameModeOptionValue {
+            case .case1(let stringValue):
+                XCTAssertTrue(stringValue == value)
+            default:
+                XCTAssertTrue(false)
+            }
+        case .notFound(let notFoundResponse):
+            let json = try notFoundResponse.body.json
+            XCTAssertTrue(json.success == false)
+            XCTAssertTrue(json.error == "File not found")
+        default:
+            XCTAssertTrue(false)
+        }
     }
 
     func testListCreditPools() async throws {
@@ -342,7 +357,7 @@ final class ExarotonAPITests: XCTestCase {
             XCTAssertTrue(data.first?.id?.isEmpty == false)
         }
     }
-    
+
     func testGetACreditPool() async throws {
         let response = try await client.getCreditPool(path: .init(poolId: yourCreditPoolId))
         let data = try response.ok.body.json.data

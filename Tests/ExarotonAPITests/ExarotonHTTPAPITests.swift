@@ -147,8 +147,8 @@ final class ExarotonHTTPAPITests: XCTestCase {
             let json = try internalServerResponse.body.json
             XCTAssertTrue(json.success == false)
             XCTAssertTrue(json.error == "Server is already starting")
-        case .undocumented(let statusCode, let payload):
-            XCTAssertTrue(false, "statusCode: \(statusCode), payload: \(payload)")
+        case .undocumented(let statusCode, _):
+            XCTAssertTrue(statusCode == 208)
         default:
             XCTAssertTrue(false, "\(response)")
         }
@@ -170,8 +170,8 @@ final class ExarotonHTTPAPITests: XCTestCase {
             XCTAssertNotNil(json)
             XCTAssertFalse(json.success ?? false)
             XCTAssertTrue(json.error == "Server is not offline")
-        case .undocumented(let statusCode, let payload):
-            XCTAssertTrue(false, "statusCode: \(statusCode), payload: \(payload)")
+        case .undocumented(let statusCode, _):
+            XCTAssertTrue(statusCode == 208)
         default:
             XCTAssertTrue(false, "\(response)")
         }
@@ -328,6 +328,11 @@ final class ExarotonHTTPAPITests: XCTestCase {
             let json = try internalServerResponse.body.json
             XCTAssertTrue(json.success == false)
             XCTAssertTrue(json.error == "Internal Server Error")
+        case .badRequest(let badRequestResponse):
+            let json = try badRequestResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertFalse(json.success ?? false)
+            XCTAssertTrue(json.error == "File access is currently unavailable for this server")
         default:
             XCTAssertTrue(false, "\(response)")
         }
@@ -386,6 +391,11 @@ final class ExarotonHTTPAPITests: XCTestCase {
             let json = try internalServerResponse.body.json
             XCTAssertTrue(json.success == false)
             XCTAssertTrue(json.error == "Internal Server Error")
+        case .badRequest(let badRequestResponse):
+            let json = try badRequestResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertFalse(json.success ?? false)
+            XCTAssertTrue(json.error == "File access is currently unavailable for this server")
         default:
             XCTAssertTrue(false, "\(response)")
         }

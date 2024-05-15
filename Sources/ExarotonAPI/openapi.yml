@@ -1045,7 +1045,7 @@ components:
                 nullable: true
               data:
                 nullable: true
-                type: array
+                type: object
                 items:
                   $ref: '#/components/schemas/Server'
                 description: The response data
@@ -1220,7 +1220,7 @@ components:
                 type: string
                 nullable: true
               data:
-                type: array
+                type: object
                 items:
                   $ref: '#/components/schemas/FileInfo'
     GetConfigFileResponse:

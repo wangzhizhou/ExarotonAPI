@@ -25,7 +25,9 @@ let package = Package(
 
 ```
 
-You can found all endpoint usage example in the 👉🏻 [unittest cases][unit tests] 👈🏻
+You can found http endpoint usage examples in the 👉🏻 [http cases][http] 👈🏻
+
+You can found websocket usage example in the 👉🏻 [ws cases][ws send] and [event handler][ws receive] 👈🏻
 
 ## Developemnt 👨🏻‍💻
 
@@ -82,4 +84,6 @@ If things goes well, you will see the unittests run and success or fail as follo
 
 [Swift OpenAPI Generator]: <https://swiftpackageindex.com/apple/swift-openapi-generator>
 
-[unit tests]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ExarotonAPITests/ExarotonAPITests.swift>
+[http]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ExarotonAPITests/ExarotonHTTPAPITests.swift>
+[ws send]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ExarotonAPITests/ExarotonWSAPITests.swift>
+[ws receive]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ExarotonAPITests/WebSocketEventDelegateHandler.swift>

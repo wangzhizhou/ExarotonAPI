@@ -1,228 +1,364 @@
 import XCTest
-@testable import ExarotonAPI
 
+@testable import ExarotonAPI
 import OpenAPIRuntime
 import OpenAPIURLSession
 
-extension ExarotonAPITests {
-
-    /// If you want to run this test, please input your own server token on Exaroton platform
-    static let serverToken = "<your_server_token>"
-}
-
 final class ExarotonAPITests: XCTestCase {
 
-    let client = Client(
-        serverURL: try! Servers.server1(),
-        transport: URLSessionTransport(),
-        middlewares: [
-            AuthenticationMiddleware(token: serverToken)
-        ])
-}
+    var yourServerToken: String = ""
 
-extension ExarotonAPITests {
+    var yourServerId: String = ""
 
-    func testAccount() async throws {
+    var yourCreditPoolId: String = ""
+
+    var yourTestPlayerName = ""
+
+    var yourTestFilePath = ""
+
+    lazy var client: Client = {
+        let ret = Client(
+            serverURL: try! Servers.server1(),
+            transport: URLSessionTransport(),
+            middlewares: [AuthenticationMiddleware(token: yourServerToken)]
+        )
+        return ret
+    }()
+
+    override func setUp() async throws {
+
+        let env = ProcessInfo.processInfo.environment
+
+        yourServerToken = env["TOKEN"] ?? ""
+
+        yourServerId = env["SERVER"] ?? ""
+
+        yourCreditPoolId = env["POOL"] ?? ""
+
+        yourTestPlayerName = env["PLAYER"] ?? "ExarotonAPITests_Player"
+
+        yourTestFilePath = env["FILE"] ?? "ExarotonAPITests_Test_File"
+    }
+
+    func testGetAccountInfo() async throws {
         let response = try await client.getAccount()
         let data = try response.ok.body.json.data
         XCTAssertNotNil(data)
     }
 
-//    func testServers() async throws {
-//        let response = try await client.request(.servers(), dataType: [ServerData].self)
-//        guard let servers = checkResponse(response)
-//        else { return }
-//        XCTAssertFalse(servers.isEmpty)
-//    }
-//
-//    func testServer() async throws {
-//        let response = try await client.request(.servers(serverId: serverId), dataType: ServerData.self)
-//        checkResponse(response)
-//    }
-//
-//    func testGetServerLog() async throws {
-//        let response = try await client.request(.servers(serverId: serverId, op: .logs), dataType: ServerLogData.self)
-//        checkResponse(response)
-//    }
-//
-//    func testUploadServerLog() async throws {
-//        let response = try await client.request(.servers(serverId: serverId, op: .logsShare), dataType: ServerLogShareData.self)
-//        XCTAssertNotNil(response)
-//    }
-//
-//    func testGetServerRAM() async throws {
-//        let response = try await client.request(.servers(serverId: serverId, op: .ram()), dataType: ServerRAMData.self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        XCTAssertTrue(data.ram > 0)
-//    }
-//
-//    func testChangeServerRAM() async throws {
-//        let dstRAM = 2
-//        let response = try await client.request(.servers(serverId: serverId, op: .ram(.init(ram: dstRAM))), dataType: ServerRAMData.self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        XCTAssertTrue(data.ram == dstRAM)
-//    }
-//
-//    func testGetServerMOTD() async throws {
-//        let response = try await client.request(.servers(serverId: serverId, op: .motd()), dataType: ServerMOTDData.self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        XCTAssertFalse(data.motd.isEmpty)
-//    }
-//
-//    func testChangeServerMOTD() async throws {
-//        let dstMOTD = "§b🗡 §7欢迎来到§ajokerhub§7的服务器！§b⛏"
-//        let response = try await client.request(.servers(serverId: serverId, op: .motd(.init(motd: dstMOTD))), dataType: ServerMOTDData.self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        XCTAssertTrue(data.motd == dstMOTD)
-//    }
-//
-//    func testStartServer() async throws {
-//        let response = try await client.request(.servers(serverId: serverId, op: .start()), dataType: String.self)
-//        XCTAssertNotNil(response)
-//    }
-//
-//    func testStartServerWithOwnCredits() async throws {
-//        let response = try await client.request(.servers(serverId: serverId, op: .start(.init(useOwnCredits: true))), dataType: String.self)
-//        XCTAssertNotNil(response)
-//    }
-//
-//    func testStopServer() async throws {
-//        let response = try await client.request(.servers(serverId: serverId, op: .stop), dataType: String.self)
-//        XCTAssertNotNil(response)
-//    }
-//
-//    func testRestartServer() async throws {
-//        let response = try await client.request(.servers(serverId: serverId, op: .restart), dataType: String.self)
-//        XCTAssertNotNil(response)
-//    }
-//
-//    func testRunServerCommand() async throws {
-//        let response = try await client.request(.servers(serverId: serverId, op: .command(.init(command: "plugins"))), dataType: String.self)
-//        XCTAssertNotNil(response)
-//    }
-//
-//    func testGetPlaylistTypes() async throws {
-//        let response = try await client.request(.servers(serverId: serverId, op: .playlist()), dataType: [String].self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        XCTAssertFalse(data.isEmpty)
-//    }
-//
-//    func testGetPlaylistOfWhitelist() async throws {
-//        let response = try await client.request(.servers(serverId: serverId, op: .playlist(type: "whitelist")), dataType: [String].self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        XCTAssertFalse(data.isEmpty)
-//    }
-//
-//    func testAddPlayerIntoWhitelist() async throws {
-//        let response = try await client.request(.servers(serverId: serverId, op: .playlist(type: "whitelist", op: .add(.init(entries: [playerName])))), dataType: [String].self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        XCTAssertTrue(data.contains(playerName))
-//    }
-//
-//    func testDeletePlayerIntoWhitelist() async throws {
-//        let response = try await client.request(.servers(serverId: serverId, op: .playlist(type: "whitelist", op: .delete(.init(entries: [playerName])))), dataType: [String].self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        XCTAssertFalse(data.contains(playerName))
-//    }
-//
-//    func testGetFileInfo() async throws {
-//        let dstPath = "/server.properties"
-//        let response = try await client.request(.servers(serverId: serverId, op: .fileInfo(path: dstPath)), dataType: ServerFileInfo.self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        XCTAssertTrue(data.path == dstPath)
-//        XCTAssertNil(data.children)
-//    }
-//
-//    func testGetDirInfo() async throws {
-//        let dstPath = "/plugins"
-//        let response = try await client.request(.servers(serverId: serverId, op: .fileInfo(path: dstPath)), dataType: ServerFileInfo.self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        XCTAssertTrue(data.path == dstPath)
-//        XCTAssertNotNil(data.children)
-//    }
-//
-//    func testGetFileData() async throws {
-//        let dstPath = "/bukkit.yml"
-//        let response = try await client.request(.servers(serverId: serverId, op: .fileData(path: dstPath)), dataType: Data.self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        XCTAssertNotNil(data)
-//        XCTAssertTrue(data.count > 0)
-//    }
-//
-//    func testWriteFileData() async throws {
-//        let filePath = "new_test_file"
-//        let fileContentData = "test_write_file_content".data(using: .utf8)!
-//        let response = try await client.request(.servers(serverId: serverId, op: .fileData(path: filePath, op: .write(data: fileContentData))), dataType: String.self)
-//        XCTAssertNotNil(response)
-//        if let response {
-//            XCTAssertTrue(response.success)
-//            XCTAssertNil(response.data)
-//        }
-//    }
-//
-//    func testDeleteFile() async throws {
-//        let filePath = "new_test_file"
-//        let response = try await client.request(.servers(serverId: serverId, op: .fileData(path: filePath, op: .delete)), dataType: String.self)
-//        XCTAssertNotNil(response)
-//        if let response {
-//            XCTAssertTrue(response.success || response.error == "Access denied")
-//            XCTAssertNil(response.data)
-//        }
-//    }
-//
-//    func testGetFileConfigOptions() async throws {
-//        let configFilePath = "/server.properties"
-//        let response = try await client.request(.servers(serverId: serverId, op: .fileConfig(path: configFilePath)), dataType: [ServerFileConfig].self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        XCTAssertFalse(data.isEmpty)
-//    }
-//
-//    func testUpdateFileConfigOptions() async throws {
-//        let configFilePath = "/server.properties"
-//        let key = "gamemode"
-//        let value = "survival"
-//        let kv = [key: value]
-//        let response = try await client.request(.servers(serverId: serverId, op: .fileConfig(path: configFilePath, kv: kv)), dataType: [ServerFileConfig].self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        let gameModeOption = data.filter { $0.key == key }.first
-//        XCTAssertNotNil(gameModeOption)
-//        if let gameMode = gameModeOption?.value.value as? String {
-//            XCTAssertTrue(gameMode == value)
-//        }
-//    }
-//
-//    func testListCreditPools() async throws {
-//        let response = try await client.request(.creditPool(), dataType: [CreditPool].self)
-//        XCTAssertNotNil(response)
-//    }
-//
-//    func testGetACreditPool() async throws {
-//        let response = try await client.request(.creditPool(poolId: poolId), dataType: CreditPool.self)
-//        guard let data = checkResponse(response)
-//        else { return }
-//        XCTAssertNotNil(data.id)
-//    }
-//
-//    func testListCreditPoolMembers() async throws {
-//        let response = try await client.request(.creditPool(poolId: poolId, op: .members), dataType: [CreditPoolMember].self)
-//        XCTAssertNotNil(response)
-//    }
-//
-//    func testListCreditPoolServers() async throws {
-//        let response = try await client.request(.creditPool(poolId: poolId, op: .servers), dataType: [ServerData].self)
-//        XCTAssertNotNil(response)
-//    }
+    func testListServers() async throws {
+        let response = try await client.getServers()
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+    }
+
+    func testGetAServer() async throws {
+        let response = try await client.getServer(path: .init(serverId: yourServerId))
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+    }
+
+    func testGetAServerLog() async throws {
+        let response = try await client.getServerLog(path: .init(serverId: yourServerId))
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+    }
+
+    func testUploadAServerLog() async throws {
+        let response = try await client.shareServerLog(path: .init(serverId: yourServerId))
+        switch response {
+        case .ok(let actionResponse):
+            let json = try actionResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertNotNil(json.data)
+            XCTAssertTrue(json.success ?? false)
+        case .badRequest(let badRequestResponse):
+            let json = try badRequestResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertFalse(json.success ?? false)
+            XCTAssertTrue(
+                json.error == "Server is not offline" ||
+                json.error == "File access is currently unavailable for this server" ||
+                json.error == "Log file is empty or does not exist"
+            )
+        default:
+            XCTAssertTrue(false)
+        }
+    }
+
+    func testGetServerRAM() async throws {
+        let response = try await client.getServerRam(path: .init(serverId: yourServerId))
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+    }
+
+    func testChangeServerRAM() async throws {
+        let dstRAM: Int32 = 2
+        let response = try await client.postServerRam(.init(
+            path: .init(serverId: yourServerId),
+            body: .json(.init(ram: dstRAM))
+        ))
+        switch response {
+        case .ok(let okResponse):
+            let json = try okResponse.body.json
+            XCTAssertTrue(json.success == true)
+            XCTAssertNotNil(json.data)
+            XCTAssertTrue(json.data?.ram == dstRAM)
+        case .badRequest(let badRequestResponse):
+            let json = try badRequestResponse.body.json
+            XCTAssertTrue(json.success == false)
+            XCTAssertTrue(json.error == "只有在服务器处于关闭状态时才能上传世界。")
+        default:
+            XCTAssertTrue(false)
+        }
+    }
+
+    func testGetServerMOTD() async throws {
+        let response = try await client.getServerMotd(path: .init(serverId: yourServerId))
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+    }
+
+    func testChangeServerMOTD() async throws {
+        let dstMOTD = "§b🗡 §7欢迎来到§ajokerhub§7的服务器！§b⛏"
+        let response = try await client.postServerMotd(
+            path: .init(serverId: yourServerId),
+            body: .json(.init(motd: dstMOTD))
+        )
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+        XCTAssertTrue(data?.motd == dstMOTD)
+    }
+
+    func testStartAServer() async throws {
+        let response = try await client.getStartServer(path: .init(serverId: yourServerId))
+        switch response {
+        case .ok(let actionResponse):
+            let json = try actionResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertNil(json.data)
+            XCTAssertTrue(json.success ?? false)
+        case .badRequest(let badRequestResponse):
+            let json = try badRequestResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertFalse(json.success ?? false)
+            XCTAssertTrue(json.error == "Server is not offline")
+        case .internalServerError(let internalServerResponse):
+            let json = try internalServerResponse.body.json
+            XCTAssertTrue(json.success == false)
+            XCTAssertTrue(json.error == "Server is already starting")
+        default:
+            XCTAssertTrue(false)
+        }
+    }
+
+    func testStartAServerUseOwnCredits() async throws {
+        let response = try await client.postStartServer(
+            path: .init(serverId: yourServerId),
+            body: .json(.init(useOwnCredits: false))
+        )
+        switch response {
+        case .ok(let actionResponse):
+            let json = try actionResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertNil(json.data)
+            XCTAssertTrue(json.success ?? false)
+        case .badRequest(let badRequestResponse):
+            let json = try badRequestResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertFalse(json.success ?? false)
+            XCTAssertTrue(json.error == "Server is not offline")
+        default:
+            XCTAssertTrue(false)
+        }
+    }
+
+    func testStopAServer() async throws {
+        let response = try await client.stopServer(path: .init(serverId: yourServerId))
+        switch response {
+        case .ok(let actionResponse):
+            let json = try actionResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertNil(json.data)
+            XCTAssertTrue(json.success ?? false)
+        case .badRequest(let badRequestResponse):
+            let json = try badRequestResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertFalse(json.success ?? false)
+            XCTAssertTrue(json.error == "Server is not online")
+        default:
+            XCTAssertTrue(false)
+        }
+    }
+
+    func testRestartAServer() async throws {
+        let response = try await client.restartServer(path: .init(serverId: yourServerId))
+        switch response {
+        case .ok(let actionResponse):
+            let json = try actionResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertNil(json.data)
+            XCTAssertTrue(json.success ?? false)
+        case .badRequest(let badRequestResponse):
+            let json = try badRequestResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertFalse(json.success ?? false)
+            XCTAssertTrue(json.error == "Server is not online")
+        default:
+            XCTAssertTrue(false)
+        }
+    }
+
+    func testExecuteAServerCommand() async throws {
+        let command = "plugins"
+        let response = try await client.postServerCommand(
+            path: .init(serverId: yourServerId),
+            body: .json(.init(command: command))
+        )
+        switch response {
+        case .ok(let actionResponse):
+            let json = try actionResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertNil(json.data)
+            XCTAssertTrue(json.success ?? false)
+        case .badRequest(let badRequestResponse):
+            let json = try badRequestResponse.body.json
+            XCTAssertNotNil(json)
+            XCTAssertFalse(json.success ?? false)
+            XCTAssertTrue(json.error == "Server is not online")
+        default:
+            XCTAssertTrue(false)
+        }
+    }
+
+    func testGetAvailablePlaylist() async throws {
+        let response = try await client.getPlayerLists(path: .init(serverId: yourServerId))
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+    }
+
+    func testGetPlaylistContentsOfWhitelist() async throws {
+        let response = try await client.getPlayerList(
+            path: .init(serverId: yourServerId,list: "whitelist")
+        )
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+    }
+
+    func testAddEntriesToPlayerListOfWhitelist() async throws {
+        let response = try await client.putPlayerList(
+            path: .init(serverId: yourServerId,list: "whitelist"),
+            body: .json(.init(entries: [yourTestPlayerName]))
+        )
+        XCTAssertTrue(try response.ok.body.json.data?.contains(yourTestPlayerName) == true)
+    }
+
+    func testRemoveEntriesFromPlayerListOfWhitelist() async throws {
+        let response = try await client.deletePlayerList(
+            path: .init(serverId: yourServerId,list: "whitelist"),
+            body: .json(.init(entries: [yourTestPlayerName]))
+        )
+        XCTAssertTrue(try response.ok.body.json.data?.contains(yourTestPlayerName) == false)
+    }
+
+    func testGetFileInformation() async throws {
+        let dstPath = "server.properties"
+        let response = try await client.getFileInfo(path: .init(serverId: yourServerId, path: dstPath))
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+    }
+
+    func testGetFileData() async throws {
+        let jsonFilePath = "ops.json"
+        let zipFilePath = "config"
+        let ymlFilePath = "bukkit.yml"
+        for filePath in [jsonFilePath, zipFilePath, ymlFilePath] {
+            do {
+                let response = try await client.getFileContent(
+                    path: .init(serverId: yourServerId, path: filePath)
+                )
+                XCTAssertNotNil(try response.ok.body.binary)
+            } catch let error as OpenAPIRuntime.ClientError {
+                XCTAssertTrue(false, "\(filePath): \(error.causeDescription)")
+            }
+        }
+    }
+
+    func testWriteFileData() async throws {
+        let fileContent = "test_write_file_content"
+        let response = try await client.putFileData(
+            path: .init(serverId: yourServerId, path: yourTestFilePath),
+            body: .binary(.init(stringLiteral: fileContent))
+        )
+        let json = try response.ok.body.json
+        XCTAssertNotNil(json.success == true)
+        XCTAssertNil(json.data)
+    }
+
+    func testDeleteFile() async throws {
+        let response = try await client.deleteFile(
+            path: .init(serverId: yourServerId, path: yourTestFilePath)
+        )
+        switch response {
+        case .ok(let okResponse):
+            let json = try okResponse.body.json
+            XCTAssertNil(json.data)
+            XCTAssertTrue(json.success == true)
+        case .forbidden(let forbiddenResponse):
+            let json = try forbiddenResponse.body.json
+            XCTAssertTrue(json.success == false)
+            XCTAssertTrue(json.error == "Access denied")
+        default:
+            XCTAssertTrue(false)
+        }
+    }
+
+    func testGetConfigOptions() async throws {
+        let configFilePath = "server.properties"
+        let response = try await client.getConfigFileData(path: .init(serverId: yourServerId, path: configFilePath))
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+    }
+
+    func testUpdateConfigOptions() async throws {
+        let configFilePath = "/server.properties"
+        let key = "gamemode"
+        let value = "survival"
+        let kv = [key: value]
+        XCTAssertTrue(false)
+        //        let response = try await client.
+        //        let gameModeOption = data.filter { $0.key == key }.first
+        //        XCTAssertNotNil(gameModeOption)
+        //        if let gameMode = gameModeOption?.value.value as? String {
+        //            XCTAssertTrue(gameMode == value)
+        //        }
+    }
+
+    func testListCreditPools() async throws {
+        let response = try await client.getCreditPools()
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+        if let data, !data.isEmpty {
+            XCTAssertTrue(data.first?.id?.isEmpty == false)
+        }
+    }
+    
+    func testGetACreditPool() async throws {
+        let response = try await client.getCreditPool(path: .init(poolId: yourCreditPoolId))
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+        XCTAssertTrue(data?.id == yourCreditPoolId)
+    }
+
+    func testListCreditPoolMembers() async throws {
+        let response = try await client.getCreditPoolMembers(path: .init(poolId: yourCreditPoolId))
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+    }
+
+    func testListCreditPoolServers() async throws {
+        let response = try await client.getCreditPoolServers(path: .init(poolId: yourCreditPoolId))
+        let data = try response.ok.body.json.data
+        XCTAssertNotNil(data)
+    }
 }

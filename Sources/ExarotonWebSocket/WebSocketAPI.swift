@@ -7,7 +7,6 @@
 
 import Foundation
 import Starscream
-import HTTPTypes
 import Logging
 
 public final class WebSocketAPI {
@@ -34,7 +33,7 @@ public final class WebSocketAPI {
 
     public lazy var client: WebSocket = {
         var request = URLRequest(url: URL(string: "https://api.exaroton.com/v1/servers/\(serverId)/websocket")!)
-        request.setValue("Bearer \(token)", forHTTPHeaderField: HTTPField.Name.authorization.rawName)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.timeoutInterval = timeout
         let socket = WebSocket(request: request)
         socket.delegate = self

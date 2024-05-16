@@ -1,16 +1,9 @@
-//
-//  File.swift
-//  
-//
-//  Created by joker on 2024/5/15.
-//
-
 import Foundation
-import ExarotonAPI
+import ExarotonWebSocket
 import Starscream
 import Logging
 
-class WebSocketEventDelegateHandler: ServerEventHandlerProtocol {
+class ExarotonWebSocketEventDelegateHandler: ServerEventHandlerProtocol {
 
     let logger = Logger(label: "WebSocketEventDelegateHandler")
 
@@ -32,7 +25,7 @@ class WebSocketEventDelegateHandler: ServerEventHandlerProtocol {
         logger.notice("on keep alive")
     }
 
-    func onStatusChanged(_ server: ExarotonAPI.Server?) {
+    func onStatusChanged(_ server: ExarotonWebSocket.Server?) {
         if let server {
             logger.notice("on status: \(server)")
         }
@@ -51,19 +44,19 @@ class WebSocketEventDelegateHandler: ServerEventHandlerProtocol {
         }
     }
 
-    func onTick(_ tick: ExarotonAPI.Tick?) {
+    func onTick(_ tick: ExarotonWebSocket.Tick?) {
         if let tick {
             logger.notice("on tick: \(tick)")
         }
     }
 
-    func onStats(_ stats: ExarotonAPI.Stats?) {
+    func onStats(_ stats: ExarotonWebSocket.Stats?) {
         if let stats {
             logger.notice("on stats: \(stats)")
         }
     }
 
-    func onHeap(_ heap: ExarotonAPI.Heap?) {
+    func onHeap(_ heap: ExarotonWebSocket.Heap?) {
         if let heap {
             logger.notice("on heap: \(heap)")
         }

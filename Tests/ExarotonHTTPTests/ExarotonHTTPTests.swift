@@ -1,10 +1,10 @@
 import XCTest
 
-import ExarotonAPI
+import ExarotonHTTP
 import OpenAPIRuntime
 import OpenAPIURLSession
 
-final class ExarotonHTTPAPITests: XCTestCase {
+final class ExarotonHTTPTests: XCTestCase {
 
     var yourServerToken: String = ""
 
@@ -39,6 +39,9 @@ final class ExarotonHTTPAPITests: XCTestCase {
 
         yourTestFilePath = env["FILE"] ?? "ExarotonAPITests_Test_File"
     }
+}
+
+extension ExarotonHTTPTests {
 
     func testGetAccountInfo() async throws {
         let response = try await client.getAccount()

@@ -14,9 +14,9 @@ let package = Package(
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(
-            name: "ExarotonAPI",
-            targets: ["ExarotonAPI"]),
+        .library(name: "ExarotonHTTP", targets: ["ExarotonHTTP"]),
+        .library(name: "ExarotonWebSocket", targets: ["ExarotonWebSocket"]),
+        .library(name: "ManualExarotonHTTP", targets: ["ManualExarotonHTTP"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.2.1"),
@@ -31,19 +31,40 @@ let package = Package(
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "ExarotonAPI",
+            name: "ExarotonHTTP",
             dependencies: [
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),
                 .product(name: "HTTPTypes", package: "swift-http-types"),
+            ], plugins: [
+                .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
+            ]
+        ),
+        .testTarget(
+            name: "ExarotonHTTPTests",
+            dependencies: ["ExarotonHTTP"]
+        ),
+        .target(
+            name: "ExarotonWebSocket",
+            dependencies: [
                 .product(name: "Starscream", package: "starscream"),
                 .product(name: "AnyCodable", package: "AnyCodable"),
                 .product(name: "Logging", package: "swift-log"),
-            ], plugins: [
-                .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
-            ]),
+            ]
+        ),
         .testTarget(
-            name: "ExarotonAPITests",
-            dependencies: ["ExarotonAPI"]),
+            name: "ExarotonWebSocketTests",
+            dependencies: ["ExarotonWebSocket"]
+        ),
+        .target(
+            name: "ManualExarotonHTTP",
+            dependencies: [
+                .product(name: "AnyCodable", package: "AnyCodable"),
+            ]
+        ),
+        .testTarget(
+            name: "ManualExarotonHTTPTests",
+            dependencies: ["ManualExarotonHTTP"]
+        )
     ]
 )

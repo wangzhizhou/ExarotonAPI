@@ -1,17 +1,10 @@
-//
-//  File.swift
-//
-//
-//  Created by joker on 2024/5/15.
-//
-
 import Foundation
 import XCTest
-import ExarotonAPI
+import ExarotonWebSocket
 
-final class ExarotonWSAPITests: XCTestCase {
+final class ExarotonWebSocketTests: XCTestCase {
 
-    static let handler = WebSocketEventDelegateHandler()
+    static let handler = ExarotonWebSocketEventDelegateHandler()
 
     var socket = WebSocketAPI(
         token: ProcessInfo.processInfo.environment["TOKEN"] ?? "",

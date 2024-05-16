@@ -16,7 +16,8 @@ let package = Package(
         .target(
             name: "Your Target Name",
             dependencies: [
-                .product(name: "ExarotonAPI", package: "ExarotonAPI"),
+                .product(name: "ExarotonHTTP", package: "ExarotonAPI"),
+                .product(name: "ExarotonWebSocket", package: "ExarotonAPI"),
                 ...
             ]),
     ]
@@ -25,9 +26,19 @@ let package = Package(
 
 ```
 
-You can found http endpoint usage examples in the 👉🏻 [http cases][http] 👈🏻
+- **ExarotonHTTP**: http client generated use the [exaroton openapi doc][Exaroton OpenAPI Doc]
 
-You can found websocket usage example in the 👉🏻 [ws cases][ws send] and [event handler][ws receive] 👈🏻
+- **ExarotonWebSocket**: the websocket feature modular
+
+- **ManualExarotonHTTP**: the http client manually created for backup purpose, dont use it normally
+
+
+You can found openapi http client usage examples in the 👉🏻 [openapi http client cases][openapi http client cases] 👈🏻
+
+You can found websocket client example in the 👉🏻 [websocket send message cases][websocket send message cases] 👈🏻 
+and 👉🏻 [websocket message receive handler][websocket message receive handler] 👈🏻
+
+You can found manual create http client usage example in the 👉🏻 [manual create http client cases][manual create http client cases] 👈🏻
 
 ## Developemnt 👨🏻‍💻
 
@@ -74,15 +85,11 @@ If things goes well, you will see the unittests run and success or fail as follo
 
 
 [Exaroton]: <https://exaroton.com>
-
 [Exaroton API Website]: <https://developers.exaroton.com/>
-
 [Exaroton OpenAPI Doc]: <https://developers.exaroton.com/openapi.yaml>
-
 [Swagger Editor]: <https://editor-next.swagger.io/>
-
 [Swift OpenAPI Generator]: <https://swiftpackageindex.com/apple/swift-openapi-generator>
-
-[http]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ExarotonAPITests/ExarotonHTTPAPITests.swift>
-[ws send]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ExarotonAPITests/ExarotonWSAPITests.swift>
-[ws receive]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ExarotonAPITests/WebSocketEventDelegateHandler.swift>
+[openapi http client cases]: <>
+[websocket send message cases]: <>
+[websocket message receive handler]: <>
+[manual create http client cases]: <>

@@ -150,8 +150,11 @@ extension ExarotonHTTPTests {
             let json = try internalServerResponse.body.json
             XCTAssertTrue(json.success == false)
             XCTAssertTrue(json.error == "Server is already starting")
-        case .undocumented(let statusCode, _):
-            XCTAssertTrue(statusCode == 208)
+        case .code208(let alreadyStartResponse):
+            let json = try alreadyStartResponse.body.json
+            XCTAssertTrue(json.success == false)
+            XCTAssertTrue(json.error == "Server is already starting")
+            XCTAssertNil(json.data)
         default:
             XCTAssertTrue(false, "\(response)")
         }
@@ -173,8 +176,11 @@ extension ExarotonHTTPTests {
             XCTAssertNotNil(json)
             XCTAssertFalse(json.success ?? false)
             XCTAssertTrue(json.error == "Server is not offline")
-        case .undocumented(let statusCode, _):
-            XCTAssertTrue(statusCode == 208)
+        case .code208(let alreadyStartResponse):
+            let json = try alreadyStartResponse.body.json
+            XCTAssertTrue(json.success == false)
+            XCTAssertTrue(json.error == "Server is already starting")
+            XCTAssertNil(json.data)
         default:
             XCTAssertTrue(false, "\(response)")
         }
@@ -193,6 +199,11 @@ extension ExarotonHTTPTests {
             XCTAssertNotNil(json)
             XCTAssertFalse(json.success ?? false)
             XCTAssertTrue(json.error == "Server is not online")
+        case .code208(let alreadyStopResponse):
+            let json = try alreadyStopResponse.body.json
+            XCTAssertTrue(json.success == false)
+            XCTAssertTrue(json.error == "Server is already stopping")
+            XCTAssertNil(json.data)
         default:
             XCTAssertTrue(false, "\(response)")
         }

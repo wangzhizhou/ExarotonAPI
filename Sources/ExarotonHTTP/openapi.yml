@@ -233,6 +233,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ServerActionResponse'
+        '208':
+          $ref: '#/components/responses/AlreadyStartingResponse'
         '400':
           $ref: '#/components/responses/BadRequestResponse'
         '403':
@@ -261,6 +263,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ServerActionResponse'
+        '208':
+          $ref: '#/components/responses/AlreadyStartingResponse'
         '400':
           $ref: '#/components/responses/BadRequestResponse'
         '403':
@@ -282,6 +286,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ServerActionResponse'
+        '208':
+          $ref: '#/components/responses/AlreadyStoppingResponse'
         '400':
           $ref: '#/components/responses/BadRequestResponse'
         '403':
@@ -1339,6 +1345,18 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/CreditPoolMember'
+    AlreadyStartingResponse:
+      description: Server is already starting
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    AlreadyStoppingResponse:
+      description: Server is already stopping
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     ForbiddenResponse:
       description: Forbidden
       content:
@@ -1368,4 +1386,3 @@ components:
       type: http
       scheme: bearer
       bearerFormat: Token
-

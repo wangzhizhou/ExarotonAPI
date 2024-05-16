@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ExarotonWebSocketAPI+Internal.swift
 //
 //
 //  Created by joker on 2024/5/15.
@@ -8,20 +8,20 @@
 import Foundation
 import Starscream
 
-extension WebSocketAPI {
+extension ExarotonWebSocketAPI {
 
     func _handleEvent(event: WebSocketEvent) {
         do {
             switch event {
             case .connected(let headers):
-                logger.info("[websocket connected]: \(headers)")
+                logger.debug("[websocket connected]: \(headers)")
             case .disconnected(let reason, let code):
-                logger.info("[websocket disconnected]: \(reason) with code: \(code)")
+                logger.debug("[websocket disconnected]: \(reason) with code: \(code)")
             case .text(let text):
-                logger.info("[Received text]: \(text)")
+                logger.debug("[Received text]: \(text)")
                 try _handleTextMessage(text)
             case .binary(let data):
-                logger.info("[Received binary]: \(data.count)")
+                logger.debug("[Received binary]: \(data.count)")
             case .ping(_):
                 break
             case .pong(_):

@@ -1,5 +1,5 @@
 //
-//  ServerEventHandlerProtocol.swift
+//  ExarotonServerEventHandlerProtocol.swift
 //
 //
 //  Created by joker on 2024/5/15.
@@ -7,7 +7,7 @@
 
 import Starscream
 
-public protocol ServerEventHandlerProtocol: WebSocketDelegate {
+public protocol ExarotonServerEventHandlerProtocol: WebSocketDelegate {
 
     func onReady(serverID: String?)
 

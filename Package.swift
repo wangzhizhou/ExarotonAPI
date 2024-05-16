@@ -65,6 +65,18 @@ let package = Package(
         .testTarget(
             name: "ManualExarotonHTTPTests",
             dependencies: ["ManualExarotonHTTP"]
-        )
+        ),
+        .executableTarget(
+            name: "HTTPUsageDemo",
+            dependencies: [
+                "ExarotonHTTP",
+            ]
+        ),
+        .executableTarget(
+            name: "WebSocketUsageDemo",
+            dependencies: [
+                "ExarotonWebSocket",
+            ]
+        ),
     ]
 )

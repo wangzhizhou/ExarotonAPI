@@ -6,7 +6,7 @@ final class ExarotonWebSocketTests: XCTestCase {
 
     static let handler = ExarotonWebSocketEventDelegateHandler()
 
-    var socket = WebSocketAPI(
+    var socket = ExarotonWebSocketAPI(
         token: ProcessInfo.processInfo.environment["TOKEN"] ?? "",
         serverId: ProcessInfo.processInfo.environment["SERVER"] ?? "",
         delegate: handler

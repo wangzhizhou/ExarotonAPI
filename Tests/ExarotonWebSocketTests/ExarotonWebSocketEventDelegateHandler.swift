@@ -3,7 +3,7 @@ import ExarotonWebSocket
 import Starscream
 import Logging
 
-class ExarotonWebSocketEventDelegateHandler: ServerEventHandlerProtocol {
+class ExarotonWebSocketEventDelegateHandler: ExarotonServerEventHandlerProtocol {
 
     let logger = Logger(label: "WebSocketEventDelegateHandler")
 

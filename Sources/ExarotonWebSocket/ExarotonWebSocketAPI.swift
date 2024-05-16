@@ -1,5 +1,5 @@
 //
-//  WebSocketAPI.swift
+//  ExarotonWebSocketAPI.swift
 //
 //
 //  Created by joker on 2024/5/15.
@@ -9,20 +9,20 @@ import Foundation
 import Starscream
 import Logging
 
-public final class WebSocketAPI {
+public final class ExarotonWebSocketAPI {
 
     public let token: String
 
     public let serverId: String
 
-    public let delegate: ServerEventHandlerProtocol?
+    public let delegate: ExarotonServerEventHandlerProtocol?
 
     public let timeout: Double
 
     public init(
         token: String,
         serverId: String,
-        delegate: ServerEventHandlerProtocol? = nil,
+        delegate: ExarotonServerEventHandlerProtocol? = nil,
         timeout: Double = 5
     ) {
         self.token = token
@@ -43,7 +43,7 @@ public final class WebSocketAPI {
     let logger = Logger(label: "WebSocket")
 }
 
-extension WebSocketAPI: WebSocketDelegate {
+extension ExarotonWebSocketAPI: WebSocketDelegate {
 
     public func didReceive(event: WebSocketEvent, client: any WebSocketClient) {
 

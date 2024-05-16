@@ -89,7 +89,7 @@ If things goes well, you will see the unittests run and success or fail as follo
 [Exaroton OpenAPI Doc]: <https://developers.exaroton.com/openapi.yaml>
 [Swagger Editor]: <https://editor-next.swagger.io/>
 [Swift OpenAPI Generator]: <https://swiftpackageindex.com/apple/swift-openapi-generator>
-[openapi http client cases]: <>
-[websocket send message cases]: <>
-[websocket message receive handler]: <>
-[manual create http client cases]: <>
+[openapi http client cases]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ExarotonHTTPTests/ExarotonHTTPTests.swift>
+[websocket send message cases]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ExarotonWebSocketTests/ExarotonWebSocketTests.swift>
+[websocket message receive handler]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ExarotonWebSocketTests/ExarotonWebSocketEventDelegateHandler.swift>
+[manual create http client cases]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ManualExarotonHTTPTests/ManualExarotonHTTPTests.swift>

@@ -68,6 +68,8 @@ extension ExarotonWebSocketAPI {
                 break
             case .started:
                 self.delegate?.onStreamStarted(streamMessage.stream)
+            case .stopped:
+                self.delegate?.onStreamStopped(streamMessage.stream)
             case .line:
                 try self.delegate?.onConsoleLine(streamMessage.data?.convert(to: String.self))
             case .tick:

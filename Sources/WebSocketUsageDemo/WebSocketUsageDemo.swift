@@ -72,6 +72,12 @@ final class ServerEventHandler: ExarotonServerEventHandlerProtocol {
         }
     }
 
+    func onStreamStopped(_ stream: StreamCategory?) {
+        if let stream {
+            print("stream stopped: \(stream)")
+        }
+    }
+
     func onConsoleLine(_ line: String?) {
         if let line {
             print("console line: \(line)")

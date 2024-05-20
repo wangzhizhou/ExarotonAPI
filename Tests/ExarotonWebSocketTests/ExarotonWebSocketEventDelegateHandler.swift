@@ -37,6 +37,12 @@ class ExarotonWebSocketEventDelegateHandler: ExarotonServerEventHandlerProtocol 
         }
     }
 
+    func onStreamStopped(_ stream: StreamCategory?) {
+        if let stream {
+            logger.notice("on stream stopped: \(stream)")
+        }
+    }
+
     func onConsoleLine(_ line: String?) {
 
         if let line {

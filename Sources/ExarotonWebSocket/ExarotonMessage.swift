@@ -85,6 +85,9 @@ public enum StreamType: String, Codable {
     /// A started messages is sent when the stream was started successfully.
     case started
 
+    /// A stopped messages is sent when the stream was stopped successfully.
+    case stopped
+
     /// Console line messages include a line of console output.
     case line
     

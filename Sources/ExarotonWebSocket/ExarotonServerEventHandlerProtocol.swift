@@ -21,6 +21,8 @@ public protocol ExarotonServerEventHandlerProtocol: WebSocketDelegate {
 
     func onStreamStarted(_ stream: StreamCategory?)
 
+    func onStreamStopped(_ stream: StreamCategory?)
+
     func onConsoleLine(_ line: String?)
 
     func onTick(_ tick: Tick?)

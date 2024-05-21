@@ -53,3 +53,20 @@ extension ExarotonWebSocketAPI: WebSocketDelegate {
 
     }
 }
+
+public extension ExarotonWebSocketAPI {
+
+    func connect() {
+        client.connect()
+    }
+
+    func disconnect() {
+        client.disconnect()
+    }
+
+    func send<T: Codable>(message: ExarotonMessage<T>) throws {
+        let data = try message.toData
+        client.write(stringData: data, completion: nil)
+    }
+}
+

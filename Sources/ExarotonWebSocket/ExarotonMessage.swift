@@ -36,7 +36,7 @@ public extension ExarotonMessage {
 
 /// Messages that include a stream property are a part of a specific data stream.
 /// There are 5 different data streams available in the WebSocket API
-public enum StreamCategory: String, Codable {
+public enum StreamCategory: String, Codable, CaseIterable {
 
     /// By default, you are always subscribed to server status changes.
     /// The only message type in this stream is status

@@ -7,12 +7,25 @@
 
 import Foundation
 
+public enum ServerStatus: Int, CaseIterable, Codable {
+    case OFFLINE = 0
+    case ONLINE = 1
+    case STARTING = 2
+    case STOPPING = 3
+    case RESTARTING = 4
+    case SAVING = 5
+    case LOADING = 6
+    case CRASHED = 7
+    case PENDING = 8
+    case PREPARING = 10
+}
+
 public struct Server: Codable, Identifiable {
     public let id: String
     public let name: String
     public let address: String
     public let motd: String
-    public let status: Int
+    public let status: ServerStatus
     public let host: String?
     public let port: Int?
     public let players: Players

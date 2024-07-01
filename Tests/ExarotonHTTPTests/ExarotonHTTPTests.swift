@@ -1,5 +1,5 @@
 import Testing
-@testable import ExarotonHTTP
+import ExarotonHTTP
 import OpenAPIRuntime
 import OpenAPIURLSession
 import Foundation

@@ -1,8 +1,8 @@
 import Foundation
-import XCTest
+import Testing
 import ExarotonWebSocket
 
-final class ExarotonWebSocketTests: XCTestCase {
+final class ExarotonWebSocketTests {
 
     static let handler = ExarotonWebSocketEventDelegateHandler()
 
@@ -12,16 +12,16 @@ final class ExarotonWebSocketTests: XCTestCase {
         delegate: handler
     )
 
-    override func setUp() async throws {
+    init() async throws {
         socket.client.connect()
         try await wait(seconds: Int(socket.timeout))
     }
-
-    override func tearDown() async throws {
-        try await wait(seconds: Int(socket.timeout))
+    
+    deinit {
         socket.client.disconnect()
     }
-
+    
+    @Test
     func testStartConsoleStream() async throws {
         let message = ExarotonMessage(
             stream: .console,
@@ -31,7 +31,8 @@ final class ExarotonWebSocketTests: XCTestCase {
         let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
-
+    
+    @Test
     func testStopConsoleStream() async throws {
         let message = ExarotonMessage(
             stream: .console,
@@ -41,7 +42,8 @@ final class ExarotonWebSocketTests: XCTestCase {
         let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
-
+    
+    @Test
     func testSendConsoleCommandStream() async throws {
         let message = ExarotonMessage(
             stream: .console,
@@ -50,9 +52,9 @@ final class ExarotonWebSocketTests: XCTestCase {
         )
         let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
-
     }
-
+    
+    @Test
     func testStartTickStream() async throws {
         let message = ExarotonMessage(
             stream: .tick,
@@ -62,7 +64,8 @@ final class ExarotonWebSocketTests: XCTestCase {
         let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
-
+    
+    @Test
     func testStopTickStream() async throws {
         let message = ExarotonMessage(
             stream: .tick,
@@ -72,7 +75,8 @@ final class ExarotonWebSocketTests: XCTestCase {
         let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
-
+    
+    @Test
     func testStartStatsStream() async throws {
         let message = ExarotonMessage(
             stream: .stats,
@@ -82,7 +86,8 @@ final class ExarotonWebSocketTests: XCTestCase {
         let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
-
+    
+    @Test
     func testStopStatsStream() async throws {
         let message = ExarotonMessage(
             stream: .stats,
@@ -92,7 +97,8 @@ final class ExarotonWebSocketTests: XCTestCase {
         let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
-
+    
+    @Test
     func testStartHeapStream() async throws {
         let message = ExarotonMessage(
             stream: .heap,
@@ -102,7 +108,8 @@ final class ExarotonWebSocketTests: XCTestCase {
         let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
     }
-
+    
+    @Test
     func testStopHeapStream() async throws {
         let message = ExarotonMessage(
             stream: .heap,
@@ -111,5 +118,16 @@ final class ExarotonWebSocketTests: XCTestCase {
         )
         let data = try message.toData
         socket.client.write(stringData: data, completion: nil)
+    }
+}
+
+extension ExarotonWebSocketTests {
+    
+    func wait(minutes: Int) async throws {
+        try await wait(seconds: minutes * 60)
+    }
+
+    func wait(seconds: Int) async throws {
+        try await Task.sleep(for: .seconds(seconds))
     }
 }

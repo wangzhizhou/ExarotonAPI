@@ -14,8 +14,6 @@ and [exaroton openapi spec][Exaroton OpenAPI Doc], you can view OpenAPI Spec wit
 
 2. **ExarotonWebSocket**: websocket feature 
 
-3. **ManualExarotonHTTP**: httpclient manually created for backup purpose, dont use it normally
-
 ### HTTPClient
 
 Add Dependency: `ExarotonHTTP`:
@@ -267,4 +265,3 @@ If things goes well, you will see the unittests run and success or fail as follo
 [openapi http client cases]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ExarotonHTTPTests/ExarotonHTTPTests.swift>
 [websocket send message cases]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ExarotonWebSocketTests/ExarotonWebSocketTests.swift>
 [websocket message receive handler]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ExarotonWebSocketTests/ExarotonWebSocketEventDelegateHandler.swift>
-[manual create http client cases]: <https://github.com/wangzhizhou/ExarotonAPI/blob/main/Tests/ManualExarotonHTTPTests/ManualExarotonHTTPTests.swift>

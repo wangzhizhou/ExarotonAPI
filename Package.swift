@@ -16,7 +16,6 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(name: "ExarotonHTTP", targets: ["ExarotonHTTP"]),
         .library(name: "ExarotonWebSocket", targets: ["ExarotonWebSocket"]),
-        .library(name: "ManualExarotonHTTP", targets: ["ManualExarotonHTTP"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.2.1"),
@@ -26,6 +25,7 @@ let package = Package(
         .package(url: "https://github.com/daltoniam/Starscream.git", from: "4.0.8"),
         .package(url: "https://github.com/flight-school/anycodable.git", from: "0.6.7"),
         .package(url: "https://github.com/apple/swift-log.git", from: "1.5.4"),
+        .package(url: "https://github.com/apple/swift-testing.git", from: "0.10.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -42,7 +42,10 @@ let package = Package(
         ),
         .testTarget(
             name: "ExarotonHTTPTests",
-            dependencies: ["ExarotonHTTP"]
+            dependencies: [
+                "ExarotonHTTP",
+                .product(name: "Testing", package: "swift-testing")
+            ]
         ),
         .target(
             name: "ExarotonWebSocket",
@@ -54,17 +57,10 @@ let package = Package(
         ),
         .testTarget(
             name: "ExarotonWebSocketTests",
-            dependencies: ["ExarotonWebSocket"]
-        ),
-        .target(
-            name: "ManualExarotonHTTP",
             dependencies: [
-                .product(name: "AnyCodable", package: "AnyCodable"),
+                "ExarotonWebSocket",
+                .product(name: "Testing", package: "swift-testing")
             ]
-        ),
-        .testTarget(
-            name: "ManualExarotonHTTPTests",
-            dependencies: ["ManualExarotonHTTP"]
         ),
         .executableTarget(
             name: "HTTPUsageDemo",

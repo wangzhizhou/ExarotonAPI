@@ -118,15 +118,14 @@ import Starscream
 @main
 struct WebSocketUsageDemo {
 
-    static let handler = ServerEventHandler()
-
-    static let socket = ExarotonWebSocketAPI(
-        token: ProcessInfo.processInfo.environment["TOKEN"] ?? "your_account_token",
-        serverId: ProcessInfo.processInfo.environment["SERVER"] ?? "your_server_id",
-        delegate: handler
-    )
-
     static func main() async throws {
+        
+        let socket = ExarotonWebSocketAPI(
+            token: ProcessInfo.processInfo.environment["TOKEN"] ?? "your_account_token",
+            serverId: ProcessInfo.processInfo.environment["SERVER"] ?? "your_server_id",
+            delegate: ServerEventHandler()
+        )
+        
         socket.client.connect()
         try await wait(for: socket.timeout)
 
@@ -177,12 +176,12 @@ final class ServerEventHandler: ExarotonServerEventHandlerProtocol {
             print("stream started: \(stream)")
         }
     }
-    
+
     func onStreamStopped(_ stream: StreamCategory?) {
         if let stream {
             print("stream stopped: \(stream)")
         }
-    }    
+    }
 
     func onConsoleLine(_ line: String?) {
         if let line {

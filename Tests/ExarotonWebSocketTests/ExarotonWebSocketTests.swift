@@ -4,12 +4,10 @@ import ExarotonWebSocket
 
 final class ExarotonWebSocketTests {
 
-    static let handler = ExarotonWebSocketEventDelegateHandler()
-
     var socket = ExarotonWebSocketAPI(
         token: ProcessInfo.processInfo.environment["TOKEN"] ?? "",
         serverId: ProcessInfo.processInfo.environment["SERVER"] ?? "",
-        delegate: handler
+        delegate: ExarotonWebSocketEventDelegateHandler()
     )
 
     init() async throws {

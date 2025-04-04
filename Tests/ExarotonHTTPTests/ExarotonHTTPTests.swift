@@ -18,7 +18,7 @@ final class ExarotonHTTPTests {
     
     lazy var client: Client = {
         let ret = Client(
-            serverURL: try! Servers.server1(),
+            serverURL: try! Servers.Server1.url(),
             transport: URLSessionTransport(),
             middlewares: [AuthenticationMiddleware(token: yourServerToken)]
         )
@@ -77,12 +77,10 @@ extension ExarotonHTTPTests {
         switch response {
         case .ok(let actionResponse):
             let json = try actionResponse.body.json
-            #expect(json != nil)
             #expect(json.data != nil)
             #expect(json.success == true)
         case .badRequest(let badRequestResponse):
             let json = try badRequestResponse.body.json
-            #expect(json != nil)
             #expect(json.success == false)
             #expect(
                 json.error == "Server is not offline" ||
@@ -148,12 +146,10 @@ extension ExarotonHTTPTests {
         switch response {
         case .ok(let actionResponse):
             let json = try actionResponse.body.json
-            #expect(json != nil)
             #expect(json.data == nil)
             #expect(json.success ?? false)
         case .badRequest(let badRequestResponse):
             let json = try badRequestResponse.body.json
-            #expect(json != nil)
             #expect(json.success == false)
             #expect(json.error == "Server is not offline")
         case .internalServerError(let internalServerResponse):
@@ -179,12 +175,10 @@ extension ExarotonHTTPTests {
         switch response {
         case .ok(let actionResponse):
             let json = try actionResponse.body.json
-            #expect(json != nil)
             #expect(json.data == nil)
             #expect(json.success ?? false)
         case .badRequest(let badRequestResponse):
             let json = try badRequestResponse.body.json
-            #expect(json != nil)
             #expect(json.success == false)
             #expect(json.error == "Server is not offline")
         case .code208(let alreadyStartResponse):
@@ -203,12 +197,10 @@ extension ExarotonHTTPTests {
         switch response {
         case .ok(let actionResponse):
             let json = try actionResponse.body.json
-            #expect(json != nil)
             #expect(json.data == nil)
             #expect(json.success ?? false)
         case .badRequest(let badRequestResponse):
             let json = try badRequestResponse.body.json
-            #expect(json != nil)
             #expect(json.success == false)
             #expect(json.error == "Server is not online")
         case .code208(let alreadyStopResponse):
@@ -227,12 +219,10 @@ extension ExarotonHTTPTests {
         switch response {
         case .ok(let actionResponse):
             let json = try actionResponse.body.json
-            #expect(json != nil)
             #expect(json.data == nil)
             #expect(json.success ?? false)
         case .badRequest(let badRequestResponse):
             let json = try badRequestResponse.body.json
-            #expect(json != nil)
             #expect(json.success == false)
             #expect(json.error == "Server is not online")
         default:
@@ -250,12 +240,10 @@ extension ExarotonHTTPTests {
         switch response {
         case .ok(let actionResponse):
             let json = try actionResponse.body.json
-            #expect(json != nil)
             #expect(json.data == nil)
             #expect(json.success ?? false)
         case .badRequest(let badRequestResponse):
             let json = try badRequestResponse.body.json
-            #expect(json != nil)
             #expect(json.success == false)
             #expect(json.error == "Server is not online")
         default:
@@ -340,8 +328,13 @@ extension ExarotonHTTPTests {
                     path: .init(serverId: yourServerId, path: filePath),
                     headers: .init(accept: [.init(contentType: .binary)])
                 )
-                let binary = try #require(try response.ok.body.binary)
-                #expect(binary != nil)
+                let binaryLength = try response.ok.body.binary.length
+                switch binaryLength {
+                case .known(let length):
+                    #expect(length > 0)
+                default:
+                    Issue.record("no file data")
+                }
             } catch let error as OpenAPIRuntime.ClientError {
                 Issue.record("\(filePath): \(error.causeDescription)")
             }
@@ -366,7 +359,6 @@ extension ExarotonHTTPTests {
             #expect(json.error == "Internal Server Error")
         case .badRequest(let badRequestResponse):
             let json = try badRequestResponse.body.json
-            #expect(json != nil)
             #expect(json.success == false)
             #expect(json.error == "File access is currently unavailable for this server")
         default:
@@ -432,7 +424,6 @@ extension ExarotonHTTPTests {
             #expect(json.error == "Internal Server Error")
         case .badRequest(let badRequestResponse):
             let json = try badRequestResponse.body.json
-            #expect(json != nil)
             #expect(json.success == false)
             #expect(json.error == "File access is currently unavailable for this server")
         default:

@@ -31,4 +31,10 @@ public protocol ExarotonServerEventHandlerProtocol: WebSocketDelegate {
 
     func onHeap(_ heap: Heap?)
 
+    func onError(_ error: Error)
+
+}
+
+public extension ExarotonServerEventHandlerProtocol {
+    func onError(_ error: Error) {}
 }

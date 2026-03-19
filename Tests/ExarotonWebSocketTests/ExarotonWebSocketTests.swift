@@ -2,6 +2,14 @@ import Foundation
 import Testing
 import ExarotonWebSocket
 
+private func env(_ key: String) -> String {
+    ProcessInfo.processInfo.environment[key] ?? ""
+}
+
+private func hasEnv(_ keys: [String]) -> Bool {
+    keys.allSatisfy { !env($0).isEmpty }
+}
+
 final class ExarotonWebSocketTests {
 
     var socket = ExarotonWebSocketAPI(
@@ -11,6 +19,9 @@ final class ExarotonWebSocketTests {
     )
 
     init() async throws {
+        guard hasEnv(["TOKEN", "SERVER"]) else {
+            return
+        }
         socket.client.connect()
         try await wait(seconds: Int(socket.timeout))
     }
@@ -19,103 +30,49 @@ final class ExarotonWebSocketTests {
         socket.client.disconnect()
     }
     
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testStartConsoleStream() async throws {
-        let message = ExarotonMessage(
-            stream: .console,
-            type: StreamType.start,
-            data: ["tail": 5]
-        )
-        let data = try message.toData
-        socket.client.write(stringData: data, completion: nil)
+        try socket.startStream(.console, tail: 5)
     }
     
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testStopConsoleStream() async throws {
-        let message = ExarotonMessage(
-            stream: .console,
-            type: StreamType.stop,
-            data: nil
-        )
-        let data = try message.toData
-        socket.client.write(stringData: data, completion: nil)
+        try socket.stopStream(.console)
     }
     
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testSendConsoleCommandStream() async throws {
-        let message = ExarotonMessage(
-            stream: .console,
-            type: StreamType.command,
-            data: "say Hello"
-        )
-        let data = try message.toData
-        socket.client.write(stringData: data, completion: nil)
+        try socket.sendConsoleCommand("say Hello")
     }
     
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testStartTickStream() async throws {
-        let message = ExarotonMessage(
-            stream: .tick,
-            type: StreamType.start,
-            data: nil
-        )
-        let data = try message.toData
-        socket.client.write(stringData: data, completion: nil)
+        try socket.startStream(.tick)
     }
     
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testStopTickStream() async throws {
-        let message = ExarotonMessage(
-            stream: .tick,
-            type: StreamType.stop,
-            data: nil
-        )
-        let data = try message.toData
-        socket.client.write(stringData: data, completion: nil)
+        try socket.stopStream(.tick)
     }
     
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testStartStatsStream() async throws {
-        let message = ExarotonMessage(
-            stream: .stats,
-            type: StreamType.start,
-            data: nil
-        )
-        let data = try message.toData
-        socket.client.write(stringData: data, completion: nil)
+        try socket.startStream(.stats)
     }
     
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testStopStatsStream() async throws {
-        let message = ExarotonMessage(
-            stream: .stats,
-            type: StreamType.stop,
-            data: nil
-        )
-        let data = try message.toData
-        socket.client.write(stringData: data, completion: nil)
+        try socket.stopStream(.stats)
     }
     
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testStartHeapStream() async throws {
-        let message = ExarotonMessage(
-            stream: .heap,
-            type: StreamType.start,
-            data: nil
-        )
-        let data = try message.toData
-        socket.client.write(stringData: data, completion: nil)
+        try socket.startStream(.heap)
     }
     
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testStopHeapStream() async throws {
-        let message = ExarotonMessage(
-            stream: .heap,
-            type: StreamType.stop,
-            data: nil
-        )
-        let data = try message.toData
-        socket.client.write(stringData: data, completion: nil)
+        try socket.stopStream(.heap)
     }
 }
 

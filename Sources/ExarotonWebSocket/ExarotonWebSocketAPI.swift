@@ -8,6 +8,7 @@
 import Foundation
 import Starscream
 import Logging
+import AnyCodable
 
 public final class ExarotonWebSocketAPI {
 
@@ -68,5 +69,30 @@ public extension ExarotonWebSocketAPI {
         let data = try message.toData
         client.write(stringData: data, completion: nil)
     }
-}
 
+    func send<T: Codable>(message: ExarotonMessage<T>, completion: (() -> Void)?) throws {
+        let data = try message.toData
+        client.write(stringData: data, completion: completion)
+    }
+
+    func startStream(_ stream: StreamCategory, tail: Int? = nil, completion: (() -> Void)? = nil) throws {
+        if stream == .console {
+            let payload: [String: Any] = ["tail": tail ?? 0]
+            let message = ExarotonMessage(stream: stream, type: StreamType.start, data: .init(payload))
+            try send(message: message, completion: completion)
+        } else {
+            let message = ExarotonMessage(stream: stream, type: StreamType.start, data: nil)
+            try send(message: message, completion: completion)
+        }
+    }
+
+    func stopStream(_ stream: StreamCategory, completion: (() -> Void)? = nil) throws {
+        let message = ExarotonMessage(stream: stream, type: StreamType.stop, data: nil)
+        try send(message: message, completion: completion)
+    }
+
+    func sendConsoleCommand(_ command: String, completion: (() -> Void)? = nil) throws {
+        let message = ExarotonMessage(stream: .console, type: StreamType.command, data: .init(command))
+        try send(message: message, completion: completion)
+    }
+}

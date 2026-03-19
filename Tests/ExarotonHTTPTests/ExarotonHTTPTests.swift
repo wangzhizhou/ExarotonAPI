@@ -4,6 +4,18 @@ import OpenAPIRuntime
 import OpenAPIURLSession
 import Foundation
 
+private func env(_ key: String) -> String {
+    ProcessInfo.processInfo.environment[key] ?? ""
+}
+
+private func hasEnv(_ key: String) -> Bool {
+    !env(key).isEmpty
+}
+
+private func hasEnv(_ keys: [String]) -> Bool {
+    keys.allSatisfy(hasEnv)
+}
+
 final class ExarotonHTTPTests {
 
     var yourServerToken: String = ""
@@ -43,35 +55,35 @@ final class ExarotonHTTPTests {
 
 extension ExarotonHTTPTests {
 
-    @Test
+    @Test(.enabled(if: hasEnv("TOKEN"), "Missing environment variable: TOKEN"))
     func testGetAccountInfo() async throws {
         let response = try await client.getAccount()
         let data = try response.ok.body.json.data
         #expect(data != nil)
     }
     
-    @Test
+    @Test(.enabled(if: hasEnv("TOKEN"), "Missing environment variable: TOKEN"))
     func testListServers() async throws {
         let response = try await client.getServers()
         let data = try response.ok.body.json.data
         #expect(data != nil)
     }
     
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testGetAServer() async throws {
         let response = try await client.getServer(path: .init(serverId: yourServerId))
         let data = try response.ok.body.json.data
         #expect(data != nil)
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testGetAServerLog() async throws {
         let response = try await client.getServerLog(path: .init(serverId: yourServerId))
         let data = try response.ok.body.json.data
         #expect(data != nil)
     }
     
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testUploadAServerLog() async throws {
         let response = try await client.shareServerLog(path: .init(serverId: yourServerId))
         switch response {
@@ -92,14 +104,14 @@ extension ExarotonHTTPTests {
         }
     }
     
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testGetServerRAM() async throws {
         let response = try await client.getServerRam(path: .init(serverId: yourServerId))
         let data = try response.ok.body.json.data
         #expect(data != nil)
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testChangeServerRAM() async throws {
         let dstRAM: Int32 = 2
         let response = try await client.postServerRam(.init(
@@ -121,14 +133,14 @@ extension ExarotonHTTPTests {
         }
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testGetServerMOTD() async throws {
         let response = try await client.getServerMotd(path: .init(serverId: yourServerId))
         let data = try response.ok.body.json.data
         #expect(data != nil)
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testChangeServerMOTD() async throws {
         let dstMOTD = "§b🗡 §7欢迎来到§ajokerhub§7的服务器！§b⛏"
         let response = try await client.postServerMotd(
@@ -140,7 +152,7 @@ extension ExarotonHTTPTests {
         #expect(data?.motd == dstMOTD)
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testStartAServer() async throws {
         let response = try await client.getStartServer(path: .init(serverId: yourServerId))
         switch response {
@@ -166,7 +178,7 @@ extension ExarotonHTTPTests {
         }
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testStartAServerUseOwnCredits() async throws {
         let response = try await client.postStartServer(
             path: .init(serverId: yourServerId),
@@ -191,7 +203,7 @@ extension ExarotonHTTPTests {
         }
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testStopAServer() async throws {
         let response = try await client.stopServer(path: .init(serverId: yourServerId))
         switch response {
@@ -213,7 +225,7 @@ extension ExarotonHTTPTests {
         }
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testRestartAServer() async throws {
         let response = try await client.restartServer(path: .init(serverId: yourServerId))
         switch response {
@@ -230,7 +242,7 @@ extension ExarotonHTTPTests {
         }
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testExecuteAServerCommand() async throws {
         let command = "plugins"
         let response = try await client.postServerCommand(
@@ -251,14 +263,14 @@ extension ExarotonHTTPTests {
         }
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testGetAvailablePlaylist() async throws {
         let response = try await client.getPlayerLists(path: .init(serverId: yourServerId))
         let data = try response.ok.body.json.data
         #expect(data != nil)
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testGetPlaylistContentsOfWhitelist() async throws {
         let response = try await client.getPlayerList(
             path: .init(serverId: yourServerId,list: "whitelist")
@@ -267,7 +279,7 @@ extension ExarotonHTTPTests {
         #expect(data != nil)
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testAddEntriesToPlayerListOfWhitelist() async throws {
         let response = try await client.putPlayerList(
             path: .init(serverId: yourServerId,list: "whitelist"),
@@ -288,7 +300,7 @@ extension ExarotonHTTPTests {
 
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testRemoveEntriesFromPlayerListOfWhitelist() async throws {
         let response = try await client.deletePlayerList(
             path: .init(serverId: yourServerId,list: "whitelist"),
@@ -309,7 +321,7 @@ extension ExarotonHTTPTests {
 
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testGetFileInformation() async throws {
         let dstPath = "server.properties"
         let response = try await client.getFileInfo(path: .init(serverId: yourServerId, path: dstPath))
@@ -317,7 +329,7 @@ extension ExarotonHTTPTests {
         #expect(data != nil)
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testGetFileData() async throws {
         let jsonFilePath = "ops.json"
         let zipFilePath = "config"
@@ -341,7 +353,7 @@ extension ExarotonHTTPTests {
         }
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testWriteFileData() async throws {
         let fileContent = "test_write_file_content"
         let response = try await client.putFileData(
@@ -366,7 +378,7 @@ extension ExarotonHTTPTests {
         }
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testDeleteFile() async throws {
         let response = try await client.deleteFile(
             path: .init(serverId: yourServerId, path: yourTestFilePath)
@@ -385,7 +397,7 @@ extension ExarotonHTTPTests {
         }
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testGetConfigOptions() async throws {
         let configFilePath = "server.properties"
         let response = try await client.getConfigFileData(path: .init(serverId: yourServerId, path: configFilePath))
@@ -393,7 +405,7 @@ extension ExarotonHTTPTests {
         #expect(data != nil)
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "SERVER"]), "Missing environment variable: TOKEN or SERVER"))
     func testUpdateConfigOptions() async throws {
         let configFilePath = "server.properties"
         let key = "gamemode"
@@ -431,7 +443,7 @@ extension ExarotonHTTPTests {
         }
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv("TOKEN"), "Missing environment variable: TOKEN"))
     func testListCreditPools() async throws {
         let response = try await client.getCreditPools()
         let data = try response.ok.body.json.data
@@ -441,7 +453,7 @@ extension ExarotonHTTPTests {
         }
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "POOL"]), "Missing environment variable: TOKEN or POOL"))
     func testGetACreditPool() async throws {
         let response = try await client.getCreditPool(path: .init(poolId: yourCreditPoolId))
         let data = try response.ok.body.json.data
@@ -449,14 +461,14 @@ extension ExarotonHTTPTests {
         #expect(data?.id == yourCreditPoolId)
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "POOL"]), "Missing environment variable: TOKEN or POOL"))
     func testListCreditPoolMembers() async throws {
         let response = try await client.getCreditPoolMembers(path: .init(poolId: yourCreditPoolId))
         let data = try response.ok.body.json.data
         #expect(data != nil)
     }
 
-    @Test
+    @Test(.enabled(if: hasEnv(["TOKEN", "POOL"]), "Missing environment variable: TOKEN or POOL"))
     func testListCreditPoolServers() async throws {
         let response = try await client.getCreditPoolServers(path: .init(poolId: yourCreditPoolId))
         let data = try response.ok.body.json.data

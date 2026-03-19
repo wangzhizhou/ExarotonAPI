@@ -343,6 +343,32 @@ paths:
           $ref: '#/components/responses/NotFoundResponse'
         '500':
           $ref: '#/components/responses/InternalErrorResponse'
+  /servers/{serverId}/extend-time/:
+    post:
+      tags:
+        - Server Actions
+      summary: Extend server stop timer
+      operationId: extendServerStopTime
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/serverId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtendServerStopTimeRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/ServerActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalErrorResponse'
   /servers/{serverId}/playerlists/:
     get:
       tags:
@@ -775,6 +801,13 @@ components:
     PostConfigFileBody:
       type: object
       additionalProperties: true
+    ExtendServerStopTimeRequestBody:
+      type: object
+      properties:
+        time:
+          type: integer
+          description: Number of seconds to extend the stop timer by
+          example: 60
 
     Server:
       type: object
@@ -869,6 +902,7 @@ components:
          * 6 = LOADING
          * 7 = CRASHED
          * 8 = PENDING
+         * 9 = TRANSFERRING
          * 10 = PREPARING
       type: integer
       enum:
@@ -881,7 +915,20 @@ components:
         - 6
         - 7
         - 8
+        - 9
         - 10
+      x-enum-varnames:
+        - OFFLINE
+        - ONLINE
+        - STARTING
+        - STOPPING
+        - RESTARTING
+        - SAVING
+        - LOADING
+        - CRASHED
+        - PENDING
+        - TRANSFERRING
+        - PREPARING
     Error:
       type: object
       properties:
@@ -1188,7 +1235,7 @@ components:
                     description: The MOTD of the server
                     example: "§7Welcome to the server of §aexample!"
     ServerActionResponse:
-      description: Response for the request `getServerMotd`
+      description: Response for server action requests
       content:
         application/json:
           schema:

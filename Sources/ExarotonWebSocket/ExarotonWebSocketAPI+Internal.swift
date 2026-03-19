@@ -37,8 +37,9 @@ extension ExarotonWebSocketAPI {
             case .peerClosed:
                 break
             }
-        } catch let error {
-            fatalError(error.localizedDescription)
+        } catch {
+            logger.error(.init(stringLiteral: error.localizedDescription))
+            delegate?.onError(error)
         }
     }
 
@@ -65,7 +66,7 @@ extension ExarotonWebSocketAPI {
             case .status:
                 try self.delegate?.onStatusChanged(streamMessage.data?.convert(to: Server.self))
             case .start, .stop, .command:
-                break
+                logger.debug("[Received stream control]: \(streamMessage.stream?.rawValue ?? "nil") \(streamMessage.type.rawValue)")
             case .started:
                 self.delegate?.onStreamStarted(streamMessage.stream)
             case .stopped:
@@ -86,5 +87,6 @@ extension ExarotonWebSocketAPI {
     func _handleError(_ error: Error?) {
         guard let error else { return }
         logger.error(.init(stringLiteral: error.localizedDescription))
+        delegate?.onError(error)
     }
 }

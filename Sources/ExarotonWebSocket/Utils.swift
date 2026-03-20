@@ -20,6 +20,19 @@ extension String {
     }
 }
 
+struct ExarotonRawMessage: Decodable {
+    let stream: StreamCategory?
+    let type: String
+    let data: AnyCodable?
+}
+
+extension String {
+    func wsRawMessage() throws -> ExarotonRawMessage? {
+        guard let data = self.data(using: .utf8) else { return nil }
+        return try JSONDecoder.shared.decode(ExarotonRawMessage.self, from: data)
+    }
+}
+
 extension JSONDecoder {
 
     static let shared = JSONDecoder()

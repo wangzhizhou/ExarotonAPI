@@ -16,23 +16,31 @@ public final class ExarotonWebSocketAPI {
 
     public let serverId: String
 
-    public let delegate: ExarotonServerEventHandlerProtocol?
+    public weak var delegate: (any ExarotonServerEventHandlerProtocol)?
 
     public let timeout: Double
+
+    public let callbackQueue: DispatchQueue
+
+    private var eventContinuation: AsyncStream<ExarotonWebSocketEvent>.Continuation?
+    private var eventContinuationToken: UUID?
+    private let eventLock = NSLock()
 
     public init(
         token: String,
         serverId: String,
         delegate: ExarotonServerEventHandlerProtocol? = nil,
-        timeout: Double = 5
+        timeout: Double = 5,
+        callbackQueue: DispatchQueue = .main
     ) {
         self.token = token
         self.serverId = serverId
         self.delegate = delegate
         self.timeout = timeout
+        self.callbackQueue = callbackQueue
     }
 
-    public lazy var client: WebSocket = {
+    private lazy var client: WebSocket = {
         var request = URLRequest(url: URL(string: "https://api.exaroton.com/v1/servers/\(serverId)/websocket")!)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.timeoutInterval = timeout
@@ -48,7 +56,7 @@ extension ExarotonWebSocketAPI: WebSocketDelegate {
 
     public func didReceive(event: WebSocketEvent, client: any WebSocketClient) {
 
-        self.delegate?.didReceive(event: event, client: client)
+        _deliver { $0.didReceive(event: event, client: client) }
 
         self._handleEvent(event: event)
 
@@ -63,6 +71,26 @@ public extension ExarotonWebSocketAPI {
 
     func disconnect() {
         client.disconnect()
+    }
+
+    func events() -> AsyncStream<ExarotonWebSocketEvent> {
+        AsyncStream { continuation in
+            let token = UUID()
+            eventLock.lock()
+            eventContinuation?.finish()
+            eventContinuation = continuation
+            eventContinuationToken = token
+            eventLock.unlock()
+
+            continuation.onTermination = { @Sendable _ in
+                self.eventLock.lock()
+                if self.eventContinuationToken == token {
+                    self.eventContinuation = nil
+                    self.eventContinuationToken = nil
+                }
+                self.eventLock.unlock()
+            }
+        }
     }
 
     func send<T: Codable>(message: ExarotonMessage<T>) throws {
@@ -94,5 +122,19 @@ public extension ExarotonWebSocketAPI {
     func sendConsoleCommand(_ command: String, completion: (() -> Void)? = nil) throws {
         let message = ExarotonMessage(stream: .console, type: StreamType.command, data: .init(command))
         try send(message: message, completion: completion)
+    }
+}
+
+extension ExarotonWebSocketAPI {
+    func _deliver(_ body: @escaping @Sendable (any ExarotonServerEventHandlerProtocol) -> Void) {
+        guard let delegate else { return }
+        callbackQueue.async { body(delegate) }
+    }
+
+    func _yield(_ event: ExarotonWebSocketEvent) {
+        eventLock.lock()
+        let continuation = eventContinuation
+        eventLock.unlock()
+        continuation?.yield(event)
     }
 }

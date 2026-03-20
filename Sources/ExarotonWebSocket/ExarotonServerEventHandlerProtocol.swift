@@ -7,13 +7,13 @@
 
 import Starscream
 
-public protocol ExarotonServerEventHandlerProtocol: WebSocketDelegate {
-
+public protocol ExarotonServerEventHandlerProtocol: AnyObject, WebSocketDelegate {
     func onReady(serverID: String?)
 
     func onConnected()
 
     func onDisconnected(reason: String?)
+
 
     func onKeepAlive()
 

@@ -39,46 +39,63 @@ extension ExarotonWebSocketAPI {
             }
         } catch {
             logger.error(.init(stringLiteral: error.localizedDescription))
-            delegate?.onError(error)
+            _deliver { $0.onError(error) }
+            _yield(.error(error))
         }
     }
 
     func _handleTextMessage(_ text: String) throws {
-        guard let message = try text.wsMessage(with: String.self)
-        else {
-            return
-        }
-        if message.stream == nil, let basicMessage = try text.wsMessage(with: BasicType.self) {
-            switch basicMessage.type {
+        guard let raw = try text.wsRawMessage() else { return }
+        if raw.stream == nil {
+            guard let type = BasicType(rawValue: raw.type) else { return }
+            switch type {
             case .ready:
-                let serverId = message.data?.value as? String
-                self.delegate?.onReady(serverID: serverId)
+                let serverId = raw.data?.value as? String
+                _deliver { $0.onReady(serverID: serverId) }
+                _yield(.ready(serverID: serverId))
             case .connected:
-                self.delegate?.onConnected()
+                _deliver { $0.onConnected() }
+                _yield(.connected)
             case .disconnected:
-                let reason = message.data?.value as? String
-                self.delegate?.onDisconnected(reason: reason)
+                let reason = raw.data?.value as? String
+                _deliver { $0.onDisconnected(reason: reason) }
+                _yield(.disconnected(reason: reason))
             case .keepAlive:
-                self.delegate?.onKeepAlive()
+                _deliver { $0.onKeepAlive() }
+                _yield(.keepAlive)
             }
-        } else if let streamMessage = try text.wsMessage(with: StreamType.self)  {
-            switch streamMessage.type {
+        } else {
+            guard let stream = raw.stream else { return }
+            guard let type = StreamType(rawValue: raw.type) else { return }
+            switch type {
             case .status:
-                try self.delegate?.onStatusChanged(streamMessage.data?.convert(to: Server.self))
+                let info = try raw.data?.convert(to: Server.self)
+                _deliver { $0.onStatusChanged(info) }
+                _yield(.statusChanged(info))
             case .start, .stop, .command:
-                logger.debug("[Received stream control]: \(streamMessage.stream?.rawValue ?? "nil") \(streamMessage.type.rawValue)")
+                logger.debug("[Received stream control]: \(stream.rawValue) \(type.rawValue)")
             case .started:
-                self.delegate?.onStreamStarted(streamMessage.stream)
+                _deliver { $0.onStreamStarted(stream) }
+                _yield(.streamStarted(stream))
             case .stopped:
-                self.delegate?.onStreamStopped(streamMessage.stream)
+                _deliver { $0.onStreamStopped(stream) }
+                _yield(.streamStopped(stream))
             case .line:
-                try self.delegate?.onConsoleLine(streamMessage.data?.convert(to: String.self))
+                let line = try raw.data?.convert(to: String.self)
+                _deliver { $0.onConsoleLine(line) }
+                _yield(.consoleLine(line))
             case .tick:
-                try self.delegate?.onTick(streamMessage.data?.convert(to: Tick.self))
+                let tick = try raw.data?.convert(to: Tick.self)
+                _deliver { $0.onTick(tick) }
+                _yield(.tick(tick))
             case .stats:
-                try self.delegate?.onStats(streamMessage.data?.convert(to: Stats.self))
+                let stats = try raw.data?.convert(to: Stats.self)
+                _deliver { $0.onStats(stats) }
+                _yield(.stats(stats))
             case .heap:
-                try self.delegate?.onHeap(streamMessage.data?.convert(to: Heap.self))
+                let heap = try raw.data?.convert(to: Heap.self)
+                _deliver { $0.onHeap(heap) }
+                _yield(.heap(heap))
             }
         }
     }
@@ -87,6 +104,7 @@ extension ExarotonWebSocketAPI {
     func _handleError(_ error: Error?) {
         guard let error else { return }
         logger.error(.init(stringLiteral: error.localizedDescription))
-        delegate?.onError(error)
+        _deliver { $0.onError(error) }
+        _yield(.error(error))
     }
 }

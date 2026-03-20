@@ -48,34 +48,42 @@ final class ExarotonWebSocketDispatchTests {
     @Test
     func testDispatchReady() {
         let handler = Handler()
-        let api = ExarotonWebSocketAPI(token: "t", serverId: "s", delegate: handler)
+        let queue = DispatchQueue(label: "test")
+        let api = ExarotonWebSocketAPI(token: "t", serverId: "s", delegate: handler, callbackQueue: queue)
         api.didReceive(event: .text(#"{"type":"ready","data":"server-id"}"#), client: FakeClient())
+        queue.sync {}
         #expect(handler.readyServerID == "server-id")
     }
 
     @Test
     func testDispatchKeepAlive() {
         let handler = Handler()
-        let api = ExarotonWebSocketAPI(token: "t", serverId: "s", delegate: handler)
+        let queue = DispatchQueue(label: "test")
+        let api = ExarotonWebSocketAPI(token: "t", serverId: "s", delegate: handler, callbackQueue: queue)
         api.didReceive(event: .text(#"{"type":"keep-alive"}"#), client: FakeClient())
+        queue.sync {}
         #expect(handler.keepAliveCount == 1)
     }
 
     @Test
     func testDispatchStatus() {
         let handler = Handler()
-        let api = ExarotonWebSocketAPI(token: "t", serverId: "s", delegate: handler)
+        let queue = DispatchQueue(label: "test")
+        let api = ExarotonWebSocketAPI(token: "t", serverId: "s", delegate: handler, callbackQueue: queue)
         api.didReceive(event: .text(#"{"stream":"status","type":"status","data":{"id":"EwYiY9IAMtQBTb6U","name":"example","address":"example.exaroton.me","motd":"hi","status":1,"players":{"max":20,"count":0,"list":[]},"host":null,"port":null,"software":null,"shared":false}}"#), client: FakeClient())
+        queue.sync {}
         #expect(handler.statusServerID == "EwYiY9IAMtQBTb6U")
     }
 
     @Test
     func testDispatchStreamLifecycleAndLine() {
         let handler = Handler()
-        let api = ExarotonWebSocketAPI(token: "t", serverId: "s", delegate: handler)
+        let queue = DispatchQueue(label: "test")
+        let api = ExarotonWebSocketAPI(token: "t", serverId: "s", delegate: handler, callbackQueue: queue)
         api.didReceive(event: .text(#"{"stream":"console","type":"started"}"#), client: FakeClient())
         api.didReceive(event: .text(#"{"stream":"console","type":"line","data":"hello"}"#), client: FakeClient())
         api.didReceive(event: .text(#"{"stream":"console","type":"stopped"}"#), client: FakeClient())
+        queue.sync {}
         #expect(handler.streamStarted == .console)
         #expect(handler.consoleLine == "hello")
         #expect(handler.streamStopped == .console)
@@ -84,10 +92,12 @@ final class ExarotonWebSocketDispatchTests {
     @Test
     func testDispatchTickStatsHeap() {
         let handler = Handler()
-        let api = ExarotonWebSocketAPI(token: "t", serverId: "s", delegate: handler)
+        let queue = DispatchQueue(label: "test")
+        let api = ExarotonWebSocketAPI(token: "t", serverId: "s", delegate: handler, callbackQueue: queue)
         api.didReceive(event: .text(#"{"stream":"tick","type":"tick","data":{"averageTickTime":8.72}}"#), client: FakeClient())
         api.didReceive(event: .text(#"{"stream":"stats","type":"stats","data":{"memory":{"percent":38.49,"usage":1983},"cpu":{"percent":10.0,"usage":1.0,"limit":100}}}"#), client: FakeClient())
         api.didReceive(event: .text(#"{"stream":"heap","type":"heap","data":{"usage":2}}"#), client: FakeClient())
+        queue.sync {}
         #expect(handler.tickAverage == 8.72)
         #expect(handler.statsMemoryPercent == 38.49)
         #expect(handler.heapUsage == 2)
@@ -96,8 +106,10 @@ final class ExarotonWebSocketDispatchTests {
     @Test
     func testInvalidJsonDoesNotCrashAndCallsOnError() {
         let handler = Handler()
-        let api = ExarotonWebSocketAPI(token: "t", serverId: "s", delegate: handler)
+        let queue = DispatchQueue(label: "test")
+        let api = ExarotonWebSocketAPI(token: "t", serverId: "s", delegate: handler, callbackQueue: queue)
         api.didReceive(event: .text("not-json"), client: FakeClient())
+        queue.sync {}
         #expect(handler.errorCount == 1)
     }
 }

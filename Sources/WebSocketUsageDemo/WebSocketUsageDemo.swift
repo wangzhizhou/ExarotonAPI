@@ -1,10 +1,3 @@
-//
-//  File.swift
-//
-//
-//  Created by joker on 2024/5/16.
-//
-
 import Foundation
 import ExarotonWebSocket
 import Starscream
@@ -13,38 +6,98 @@ import Starscream
 struct WebSocketUsageDemo {
 
     static func main() async throws {
-        
-        let socket = ExarotonWebSocketAPI(
-            token: ProcessInfo.processInfo.environment["TOKEN"] ?? "your_account_token",
-            serverId: ProcessInfo.processInfo.environment["SERVER"] ?? "your_server_id",
-            delegate: ServerEventHandler()
-        )
-        
-        socket.client.connect()
-        try await wait(for: socket.timeout)
-
-        let consoleStreamMessage = ExarotonMessage(
-            stream: .console,
-            type: StreamType.start,
-            data: ["tail": 2]
-        )
-        socket.client.write(stringData: try consoleStreamMessage.toData) {
-            print("console stream start completed!")
+        let token = ProcessInfo.processInfo.environment["TOKEN"] ?? ""
+        let serverId = ProcessInfo.processInfo.environment["SERVER"] ?? ""
+        guard !token.isEmpty, !serverId.isEmpty else {
+            print("Missing env TOKEN or SERVER. Example: TOKEN=... SERVER=... swift run WebSocketUsageDemo")
+            return
         }
 
-        try await wait(for: socket.timeout)
-        socket.client.disconnect()
+        let ready = ReadySignal()
+        let handler = ServerEventHandler(ready: ready)
+        let socket = ExarotonWebSocketAPI(token: token, serverId: serverId, delegate: handler)
+
+        socket.connect()
+
+        let didBecomeReady = await ready.wait(seconds: socket.timeout)
+        guard didBecomeReady else {
+            print("Timed out waiting for ready")
+            socket.disconnect()
+            return
+        }
+
+        try socket.startStream(.console, tail: 10) {
+            print("console stream start sent")
+        }
+
+        try socket.sendConsoleCommand("say Hello from WebSocketUsageDemo") {
+            print("console command sent")
+        }
+
+        try await sleep(seconds: 3)
+        try socket.stopStream(.console) {
+            print("console stream stop sent")
+        }
+
+        try await sleep(seconds: 1)
+        socket.disconnect()
     }
 
-    static func wait(for minutes: Double) async throws {
-        try await Task.sleep(nanoseconds: UInt64(1_000_000_000 * minutes))
+    static func sleep(seconds: Double) async throws {
+        let ns = UInt64(max(0, seconds) * 1_000_000_000)
+        try await Task.sleep(nanoseconds: ns)
+    }
+}
+
+actor ReadySignal {
+    private var continuation: CheckedContinuation<Void, Never>?
+    private var isSignaled = false
+
+    func signal() {
+        isSignaled = true
+        continuation?.resume()
+        continuation = nil
+    }
+
+    func wait(seconds: Double) async -> Bool {
+        if isSignaled { return true }
+        return await withTaskGroup(of: Bool.self) { group in
+            group.addTask {
+                await withCheckedContinuation { continuation in
+                    Task { await self._install(continuation) }
+                }
+                return true
+            }
+            group.addTask {
+                let ns = UInt64(max(0, seconds) * 1_000_000_000)
+                try? await Task.sleep(nanoseconds: ns)
+                return false
+            }
+            let result = await group.next() ?? false
+            group.cancelAll()
+            return result
+        }
+    }
+
+    private func _install(_ continuation: CheckedContinuation<Void, Never>) {
+        if isSignaled {
+            continuation.resume()
+            return
+        }
+        self.continuation = continuation
     }
 }
 
 final class ServerEventHandler: ExarotonServerEventHandlerProtocol {
+    let ready: ReadySignal
+
+    init(ready: ReadySignal) {
+        self.ready = ready
+    }
 
     func onReady(serverID: String?) {
         print("server ready: \(serverID ?? "")")
+        Task { await ready.signal() }
     }
 
     func onConnected() {
@@ -101,8 +154,10 @@ final class ServerEventHandler: ExarotonServerEventHandlerProtocol {
         }
     }
 
-    // MARK: WebSocketDelegate
+    func onError(_ error: Error) {
+        print("error: \(error.localizedDescription)")
+    }
+
     func didReceive(event: Starscream.WebSocketEvent, client: any Starscream.WebSocketClient) {
-        // all events, if you need process them your self
     }
 }

@@ -9,6 +9,7 @@ private func decodeAnyCodable<T: Decodable>(_ value: AnyCodable?, as type: T.Typ
     return try JSONDecoder().decode(type, from: data)
 }
 
+@Suite(Tag.List.tags(.unit, .websocket, .codec))
 final class ExarotonWebSocketUnitTests {
     @Test
     func testDecodeReadyMessage() throws {

@@ -4,6 +4,7 @@ import HTTPTypes
 import OpenAPIRuntime
 import Foundation
 
+@Suite(Tag.List.tags(.unit, .http, .middleware))
 final class AuthenticationMiddlewareTests {
     @Test
     func testAuthenticationMiddlewareAddsAuthorizationHeader() async throws {

@@ -18,14 +18,14 @@ let package = Package(
         .library(name: "ExarotonWebSocket", targets: ["ExarotonWebSocket"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.7.1"),
-        .package(url: "https://github.com/apple/swift-openapi-runtime.git", from: "1.8.2"),
-        .package(url: "https://github.com/apple/swift-openapi-urlsession.git", from: "1.0.2"),
-        .package(url: "https://github.com/apple/swift-http-types", from: "1.3.1"),
+        .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.11.0"),
+        .package(url: "https://github.com/apple/swift-openapi-runtime.git", from: "1.11.0"),
+        .package(url: "https://github.com/apple/swift-openapi-urlsession.git", from: "1.2.0"),
+        .package(url: "https://github.com/apple/swift-http-types", from: "1.5.1"),
         .package(url: "https://github.com/daltoniam/Starscream.git", from: "4.0.8"),
         .package(url: "https://github.com/flight-school/anycodable.git", from: "0.6.7"),
-        .package(url: "https://github.com/apple/swift-log.git", from: "1.6.3"),
-        .package(url: "https://github.com/swiftlang/swift-testing.git", from: "6.0.3"),
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.10.1"),
+        .package(url: "https://github.com/swiftlang/swift-testing.git", from: "6.2.4"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.

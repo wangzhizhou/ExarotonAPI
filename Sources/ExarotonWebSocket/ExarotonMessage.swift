@@ -6,13 +6,13 @@
 //
 
 import Foundation
-import AnyCodable
+@preconcurrency import AnyCodable
 
 /// All messages received from or sent to the websocket are JSON strings.
 /// Every JSON object has a type property, and may additionally have a data and a stream property.
 ///
 /// https://developers.exaroton.com/#header-basic-messages
-public struct ExarotonMessage<T: Codable>: Codable {
+public struct ExarotonMessage<T: Codable & Sendable>: Codable, Sendable {
 
     public let stream: StreamCategory?
 
@@ -36,7 +36,7 @@ public extension ExarotonMessage {
 
 /// Messages that include a stream property are a part of a specific data stream.
 /// There are 5 different data streams available in the WebSocket API
-public enum StreamCategory: String, Codable, CaseIterable {
+public enum StreamCategory: String, Codable, CaseIterable, Sendable {
 
     /// By default, you are always subscribed to server status changes.
     /// The only message type in this stream is status
@@ -51,7 +51,7 @@ public enum StreamCategory: String, Codable, CaseIterable {
     case heap
 }
 
-public enum BasicType: String, Codable {
+public enum BasicType: String, Codable, Sendable {
 
     /// Sent after opening a websocket connection. data is the ID of the server you connected to.
     /// Before this message is received, no messages should be sent to the websocket.
@@ -67,7 +67,7 @@ public enum BasicType: String, Codable {
     case keepAlive = "keep-alive"
 }
 
-public enum StreamType: String, Codable {
+public enum StreamType: String, Codable, Sendable {
 
     /// By default, you are always subscribed to server status changes.
     /// The only message type in this stream is status

@@ -6,11 +6,11 @@
 //
 
 import Foundation
-import Starscream
+@preconcurrency import Starscream
 import Logging
 import AnyCodable
 
-public final class ExarotonWebSocketAPI {
+public final class ExarotonWebSocketAPI: @unchecked Sendable {
 
     public let token: String
 
@@ -93,12 +93,12 @@ public extension ExarotonWebSocketAPI {
         }
     }
 
-    func send<T: Codable>(message: ExarotonMessage<T>) throws {
+    func send<T: Codable & Sendable>(message: ExarotonMessage<T>) throws {
         let data = try message.toData
         client.write(stringData: data, completion: nil)
     }
 
-    func send<T: Codable>(message: ExarotonMessage<T>, completion: (() -> Void)?) throws {
+    func send<T: Codable & Sendable>(message: ExarotonMessage<T>, completion: (() -> Void)?) throws {
         let data = try message.toData
         client.write(stringData: data, completion: completion)
     }

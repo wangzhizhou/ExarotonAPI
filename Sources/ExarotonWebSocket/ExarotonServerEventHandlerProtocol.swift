@@ -5,9 +5,9 @@
 //  Created by joker on 2024/5/15.
 //
 
-import Starscream
+@preconcurrency import Starscream
 
-public protocol ExarotonServerEventHandlerProtocol: AnyObject, WebSocketDelegate {
+public protocol ExarotonServerEventHandlerProtocol: AnyObject, WebSocketDelegate, Sendable {
     func onReady(serverID: String?)
 
     func onConnected()

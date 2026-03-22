@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum ServerStatus: Int, CaseIterable, Codable {
+public enum ServerStatus: Int, CaseIterable, Codable, Sendable {
     case OFFLINE = 0
     case ONLINE = 1
     case STARTING = 2
@@ -20,7 +20,7 @@ public enum ServerStatus: Int, CaseIterable, Codable {
     case PREPARING = 10
 }
 
-public struct Server: Codable, Identifiable {
+public struct Server: Codable, Identifiable, Sendable {
     public let id: String
     public let name: String
     public let address: String
@@ -33,30 +33,30 @@ public struct Server: Codable, Identifiable {
     public let shared: Bool
 }
 
-public struct Players: Codable {
+public struct Players: Codable, Sendable {
     public let max: Int
     public let count: Int
     public let list: [String]
 }
 
-public struct Software: Codable, Identifiable {
+public struct Software: Codable, Identifiable, Sendable {
     public let id: String
     public let name: String
     public let version: String
 }
 
-public struct Tick: Codable {
+public struct Tick: Codable, Sendable {
     public let averageTickTime: Double
 }
 
-public struct Stats: Codable {
-    public struct Memory: Codable {
+public struct Stats: Codable, Sendable {
+    public struct Memory: Codable, Sendable {
         public let percent: Double
         public let usage: Double
     }
     public let memory: Memory
 
-    public struct CPU: Codable {
+    public struct CPU: Codable, Sendable {
         public let percent: Double
         public let usage: Double
         public let limit: Int
@@ -64,6 +64,6 @@ public struct Stats: Codable {
     public let cpu: CPU
 }
 
-public struct Heap: Codable {
+public struct Heap: Codable, Sendable {
     public let usage: Int64
 }

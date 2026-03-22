@@ -1,6 +1,6 @@
 import Foundation
 
-public enum ExarotonWebSocketEvent {
+public enum ExarotonWebSocketEvent: Sendable {
     case ready(serverID: String?)
     case connected
     case disconnected(reason: String?)

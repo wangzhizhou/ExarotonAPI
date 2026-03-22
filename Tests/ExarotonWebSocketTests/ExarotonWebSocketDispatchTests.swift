@@ -15,7 +15,7 @@ final class ExarotonWebSocketDispatchTests {
         func write(pong: Data, completion: (() -> ())?) { completion?() }
     }
 
-    final class Handler: ExarotonServerEventHandlerProtocol {
+    final class Handler: ExarotonServerEventHandlerProtocol, @unchecked Sendable {
         var readyServerID: String?
         var connectedCount = 0
         var disconnectedReason: String?

@@ -5,7 +5,7 @@ import HTTPTypes
 import Foundation
 
 @Suite(Tag.List.tags(.unit, .http, .transport))
-final class ExarotonHTTPUnitTests {
+final class ExarotonHTTPUnitTests: Sendable {
     let token = "test-token"
     let serverId = "EwYiY9IAMtQBTb6U"
     let poolId = "X4iJREgqBGFSBtn0"
